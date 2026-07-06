@@ -11,11 +11,27 @@ global with sharing class CB_EventIngressRest {
 
     @HttpPost
     global static String postEvent() {
+        if (!isAuthorized()) {
+            RestContext.response.statusCode = 401;
+            return '{"error":"Unauthorized"}';
+        }
+
         RestRequest req = RestContext.request;
         String eventType = req.requestURI.substring(req.requestURI.lastIndexOf('/') + 1);
         EventRequest body = (EventRequest) JSON.deserialize(req.requestBody.toString(), EventRequest.class);
         Id applicationId = Id.valueOf(body.applicationId);
         Id accountId = String.isBlank(body.accountId) ? null : Id.valueOf(body.accountId);
+
+        CB_IntegrationLogService.log(
+            'ingress/' + eventType,
+            'Inbound',
+            200,
+            'Pending',
+            body.correlationId,
+            applicationId,
+            req.requestBody.toString(),
+            null
+        );
 
         if (eventType == 'idv-completed') {
             CB_PlatformEventPublisher.publishIdvCompleted(applicationId, accountId, body.status, body.correlationId, body.reasonCode, body.payloadJson);
@@ -30,5 +46,10 @@ global with sharing class CB_EventIngressRest {
             return '{"error":"Unknown event type"}';
         }
         return '{"status":"accepted"}';
+    }
+
+    private static Boolean isAuthorized() {
+        String provided = RestContext.request.headers.get('X-CB-Ingress-Secret');
+        return String.isNotBlank(provided) && provided == CB_IntegrationSettings.getIngressSecret();
     }
 }

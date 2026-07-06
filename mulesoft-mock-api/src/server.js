@@ -10,23 +10,23 @@ app.use(express.json());
 
 const applications = new Map();
 
-// Optional: Publish mock callbacks into Salesforce (no MuleSoft required).
-// Set:
-// - SF_INSTANCE_URL=https://<yourdomain>.my.salesforce.com
-// - SF_ACCESS_TOKEN=<access token>
-// Then call POST /api/v1/mock/run-onboarding to simulate vendor callbacks.
 async function postToSalesforce(eventType, body) {
   const instanceUrl = process.env.SF_INSTANCE_URL;
   const accessToken = process.env.SF_ACCESS_TOKEN;
   if (!instanceUrl || !accessToken) return { skipped: true };
 
   const url = `${instanceUrl}/services/apexrest/cb/v1/events/${eventType}`;
+  const headers = {
+    Authorization: `Bearer ${accessToken}`,
+    'Content-Type': 'application/json'
+  };
+  if (process.env.CB_INGRESS_SECRET) {
+    headers['X-CB-Ingress-Secret'] = process.env.CB_INGRESS_SECRET;
+  }
+
   const resp = await fetch(url, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': 'application/json'
-    },
+    headers,
     body: JSON.stringify(body)
   });
   const text = await resp.text();
@@ -64,9 +64,119 @@ function resolveBureau(persona) {
   return 'STRONG_MATCH';
 }
 
+async function runRetailOnboardingChain({ applicationId, accountId, persona, corrId }) {
+  const calls = [];
+  const idvStatus = resolveIdvStatus(persona);
+  const bureauStatus = resolveBureau(persona);
+  const screeningStatus = resolveScreening(persona);
+  const kycDecision = resolveKyc(persona);
+  const corePayload = {
+    coreFinAccountId: `FA-${Date.now()}`,
+    sortCode: '04-00-04',
+    accountNumber: '12345678',
+    iban: 'GB00MOCK00001234567890'
+  };
+
+  calls.push(await postToSalesforce('idv-completed', {
+    applicationId,
+    accountId,
+    status: idvStatus,
+    correlationId: corrId,
+    reasonCode: null,
+    payloadJson: JSON.stringify({ vendorRef: 'mock-idv' })
+  }));
+
+  if (idvStatus !== 'Pass') {
+    return { calls, resolved: { idvStatus, bureauStatus, screeningStatus, kycDecision } };
+  }
+
+  if (bureauStatus !== 'STRONG_MATCH') {
+    return { calls, resolved: { idvStatus, bureauStatus, screeningStatus, kycDecision } };
+  }
+
+  calls.push(await postToSalesforce('screening-completed', {
+    applicationId,
+    accountId,
+    status: screeningStatus,
+    correlationId: corrId,
+    reasonCode: null,
+    payloadJson: JSON.stringify({ matchScore: screeningStatus === 'CLEAR' ? 0 : 88 })
+  }));
+
+  if (screeningStatus !== 'CLEAR') {
+    return { calls, resolved: { idvStatus, bureauStatus, screeningStatus, kycDecision } };
+  }
+
+  calls.push(await postToSalesforce('kyc-decision', {
+    applicationId,
+    accountId,
+    status: kycDecision,
+    correlationId: corrId,
+    reasonCode: null,
+    payloadJson: JSON.stringify({ decision: kycDecision })
+  }));
+
+  if (kycDecision === 'Approve') {
+    calls.push(await postToSalesforce('account-opened', {
+      applicationId,
+      accountId,
+      status: 'OPENED',
+      correlationId: corrId,
+      reasonCode: null,
+      payloadJson: JSON.stringify(corePayload)
+    }));
+  }
+
+  return { calls, resolved: { idvStatus, bureauStatus, screeningStatus, kycDecision } };
+}
+
+async function runSmeOnboardingChain({ applicationId, accountId, persona, corrId, crn }) {
+  const companyNumber = crn || '12345678';
+  if (companyNumber === '11111111') {
+    return { calls: [], resolved: { companyStatus: 'dissolved' } };
+  }
+  if (companyNumber === '87654321') {
+    return { calls: [], resolved: { kybReview: true } };
+  }
+  return runRetailOnboardingChain({ applicationId, accountId, persona, corrId });
+}
+
 // Health
 app.get('/api/v1/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'cb-mock-api', version: '1.0.0' });
+  res.json({ status: 'ok', service: 'cb-mock-api', version: '1.1.0' });
+});
+
+// Async orchestration entry point (Salesforce Named Credential)
+app.post('/api/v1/orchestration/onboarding-submitted', async (req, res) => {
+  const {
+    applicationId,
+    accountId,
+    testPersona,
+    correlationId: corrId,
+    applicationType,
+    crn
+  } = req.body;
+
+  if (!applicationId) {
+    return res.status(400).json({ error: 'applicationId is required' });
+  }
+
+  const persona = (testPersona || 'PASS').toUpperCase();
+  const correlation = corrId || correlationId();
+
+  res.status(202).json({ status: 'accepted', applicationId, correlationId: correlation });
+
+  setImmediate(async () => {
+    try {
+      if (applicationType === 'SME') {
+        await runSmeOnboardingChain({ applicationId, accountId, persona, corrId: correlation, crn });
+      } else {
+        await runRetailOnboardingChain({ applicationId, accountId, persona, corrId: correlation });
+      }
+    } catch (err) {
+      console.error('Orchestration callback failed', err);
+    }
+  });
 });
 
 // 1. Mock Onfido
@@ -95,7 +205,7 @@ app.get('/api/v1/mock/companies-house/v1/companies/:crn', (req, res) => {
   });
 });
 
-app.get('/api/v1/mock/companies-house/v1/companies/:crn/persons-with-significant-control', (req, res) => {
+app.get('/api/v1/mock/companies-house/v1/companies/:crn/persons-with-significant-control', (_req, res) => {
   res.json({
     items: [{ name: 'Jane Director', naturesOfControl: ['ownership-of-shares-75-to-100-percent'] }]
   });
@@ -124,11 +234,11 @@ app.post('/api/v1/mock/kyc/v1/assess', (req, res) => {
 });
 
 // 6. Mock Core Banking
-app.post('/api/v1/mock/core/v1/customers', (req, res) => {
+app.post('/api/v1/mock/core/v1/customers', (_req, res) => {
   res.json({ coreCustomerId: `CUST-${Date.now()}` });
 });
 
-app.post('/api/v1/mock/core/v1/accounts/open', (req, res) => {
+app.post('/api/v1/mock/core/v1/accounts/open', (_req, res) => {
   res.json({
     coreFinAccountId: `FA-${Date.now()}`,
     sortCode: '04-00-04',
@@ -137,21 +247,21 @@ app.post('/api/v1/mock/core/v1/accounts/open', (req, res) => {
   });
 });
 
-// 7. Partner customer API
-app.post('/api/v1/v1/onboarding/applications', (req, res) => {
+// 7. Partner customer API (MuleSoft-facing shape)
+app.post('/api/v1/onboarding/applications', (req, res) => {
   const id = `APP-${Date.now()}`;
   const appRecord = { id, ...req.body, status: 'Draft', createdAt: new Date().toISOString() };
   applications.set(id, appRecord);
   res.status(201).json(appRecord);
 });
 
-app.get('/api/v1/v1/onboarding/applications/:id', (req, res) => {
+app.get('/api/v1/onboarding/applications/:id', (req, res) => {
   const appRecord = applications.get(req.params.id);
   if (!appRecord) return res.status(404).json({ error: 'Not found' });
   res.json(appRecord);
 });
 
-app.post('/api/v1/v1/onboarding/applications/:id/submit', (req, res) => {
+app.post('/api/v1/onboarding/applications/:id/submit', (req, res) => {
   const appRecord = applications.get(req.params.id);
   if (!appRecord) return res.status(404).json({ error: 'Not found' });
   appRecord.status = 'In_Progress';
@@ -159,7 +269,7 @@ app.post('/api/v1/v1/onboarding/applications/:id/submit', (req, res) => {
   res.json({ ...appRecord, events: ['CB_Onboarding_Submitted__e'] });
 });
 
-app.post('/api/v1/v1/onboarding/applications/:id/idv/sessions', (req, res) => {
+app.post('/api/v1/onboarding/applications/:id/idv/sessions', (req, res) => {
   res.json({
     sessionId: `mock-partner-idv-${Date.now()}`,
     status: 'PENDING',
@@ -167,7 +277,7 @@ app.post('/api/v1/v1/onboarding/applications/:id/idv/sessions', (req, res) => {
   });
 });
 
-app.post('/api/v1/v1/kyb/entities/verify', (req, res) => {
+app.post('/api/v1/kyb/entities/verify', (req, res) => {
   const crn = req.body.companyNumber || '12345678';
   res.json({
     verified: crn !== '11111111',
@@ -176,7 +286,7 @@ app.post('/api/v1/v1/kyb/entities/verify', (req, res) => {
   });
 });
 
-app.post('/api/v1/v1/screening', (req, res) => {
+app.post('/api/v1/screening', (req, res) => {
   res.json({ status: resolveScreening(req.body.testPersona) });
 });
 
@@ -185,8 +295,7 @@ app.post('/api/v1/salesforce/events/:eventType', (req, res) => {
   res.json({ accepted: true, eventType: req.params.eventType, payload: req.body });
 });
 
-// End-to-end integration test helper (mock vendor callbacks -> Salesforce events)
-// Body: { applicationId, accountId, testPersona, correlationId? }
+// Manual end-to-end integration test helper
 app.post('/api/v1/mock/run-onboarding', async (req, res) => {
   const applicationId = req.body.applicationId;
   const accountId = req.body.accountId;
@@ -197,74 +306,20 @@ app.post('/api/v1/mock/run-onboarding', async (req, res) => {
     return res.status(400).json({ error: 'applicationId is required' });
   }
 
-  const idvStatus = resolveIdvStatus(persona);
-  const bureauStatus = resolveBureau(persona);
-  const screeningStatus = resolveScreening(persona);
-  const kycDecision = resolveKyc(persona);
-  const corePayload = {
-    coreFinAccountId: `FA-${Date.now()}`,
-    sortCode: '04-00-04',
-    accountNumber: '12345678',
-    iban: 'GB00MOCK00001234567890'
-  };
-
-  const calls = [];
-  calls.push(await postToSalesforce('idv-completed', {
+  const result = await runRetailOnboardingChain({
     applicationId,
     accountId,
-    status: idvStatus,
-    correlationId: corrId,
-    reasonCode: null,
-    payloadJson: JSON.stringify({ vendorRef: 'mock-idv' })
-  }));
-
-  // Only continue if IDV passes (matches our Wave 1 mock rules)
-  if (idvStatus === 'Pass') {
-    if (bureauStatus !== 'STRONG_MATCH') {
-      // POA path - stop after bureau equivalent (no further SF callbacks in this helper)
-      return res.json({ applicationId, accountId, correlationId: corrId, persona, resolved: { idvStatus, bureauStatus }, salesforce: calls });
-    }
-    calls.push(await postToSalesforce('screening-completed', {
-      applicationId,
-      accountId,
-      status: screeningStatus,
-      correlationId: corrId,
-      reasonCode: null,
-      payloadJson: JSON.stringify({ matchScore: screeningStatus === 'CLEAR' ? 0 : 88 })
-    }));
-
-    // Only continue if screening clears
-    if (screeningStatus === 'CLEAR') {
-      calls.push(await postToSalesforce('kyc-decision', {
-        applicationId,
-        accountId,
-        status: kycDecision,
-        correlationId: corrId,
-        reasonCode: null,
-        payloadJson: JSON.stringify({ decision: kycDecision })
-      }));
-
-      // Only open account if KYC approves
-      if (kycDecision === 'Approve') {
-        calls.push(await postToSalesforce('account-opened', {
-          applicationId,
-          accountId,
-          status: 'OPENED',
-          correlationId: corrId,
-          reasonCode: null,
-          payloadJson: JSON.stringify(corePayload)
-        }));
-      }
-    }
-  }
+    persona,
+    corrId
+  });
 
   res.json({
     applicationId,
     accountId,
     correlationId: corrId,
     persona,
-    resolved: { idvStatus, screeningStatus, kycDecision },
-    salesforce: calls
+    resolved: result.resolved,
+    salesforce: result.calls
   });
 });
 

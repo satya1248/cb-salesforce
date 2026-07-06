@@ -72,7 +72,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>Done_Text</name>
-            <fieldText>&lt;p&gt;Case closed.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;Case closed.&lt;/b&gt;&lt;/p&gt;&lt;p&gt;{!Action_Resolve.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application status:&lt;/b&gt; {!Action_Resolve.finalStatus}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>

@@ -47,6 +47,26 @@ curl -sS -X POST "http://localhost:3001/api/v1/mock/run-onboarding" \\
 
 Personas: `PASS`, `REFER`, `FAIL`, `SANCTIONS_HIT`, `DECLINE`
 
+## Async orchestration (Phase B)
+
+Salesforce publishes `CB_Onboarding_Submitted__e`, then calls:
+
+- `POST /api/v1/orchestration/onboarding-submitted`
+
+The mock API returns `202 Accepted` and asynchronously posts vendor callbacks to Salesforce ingress:
+
+- `POST /services/apexrest/cb/v1/events/{eventType}`
+
+Set the ingress secret on both sides:
+
+```bash
+export CB_INGRESS_SECRET="cb-dev-ingress-secret"
+```
+
+In Salesforce, configure **CB Integration Settings** (`Ingress_Shared_Secret__c`) to the same value.
+
+Update the Named Credential `CB_Mock_Integration` endpoint if not using localhost (e.g. ngrok URL for scratch org callouts).
+
 ## Test personas
 
 | Persona | Effect |

@@ -39,18 +39,18 @@ public with sharing class CB_RetailOnboardingActions {
                 Channel__c = CB_OnboardingConstants.CHANNEL_WEB,
                 Status__c = CB_OnboardingConstants.STATUS_IN_PROGRESS,
                 Correlation_Id__c = correlationId,
-                Entity_Type__c = 'Individual'
+                Entity_Type__c = 'Individual',
+                Test_Persona__c = req.testPersona
             );
             insert app;
 
             CB_PlatformEventPublisher.publishOnboardingSubmitted(app.Id, person.Id, correlationId);
-            CB_MockOrchestrator.Result mockResult = CB_MockOrchestrator.runSingle(app.Id, req.testPersona);
 
             CreateResult result = new CreateResult();
             result.accountId = person.Id;
             result.applicationId = app.Id;
-            result.message = mockResult.message;
-            result.finalStatus = mockResult.finalStatus;
+            result.message = 'Application submitted for async processing';
+            result.finalStatus = CB_OnboardingConstants.STATUS_IN_PROGRESS;
             results.add(result);
         }
         return results;

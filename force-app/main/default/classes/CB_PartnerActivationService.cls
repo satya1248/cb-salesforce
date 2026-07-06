@@ -7,7 +7,11 @@ public with sharing class CB_PartnerActivationService {
             LIMIT 1
         ];
 
-        update new CB_Partner_Config__c(Id = config.Id, Status__c = 'Active');
+        update new CB_Partner_Config__c(
+            Id = config.Id,
+            Status__c = 'Active',
+            API_Client_Secret__c = CB_Util.generateApiSecret()
+        );
         if (config.Partner_Account__c != null) {
             update new Account(
                 Id = config.Partner_Account__c,

@@ -100,6 +100,50 @@ public with sharing class CB_MockOrchestrator {
     return runRetailSingle(applicationId, persona);
   }
 
+  public static Result resumeFromIdv(Id applicationId) {
+    CB_Onboarding_Application__c app = CB_OnboardingApplicationService.getRequired(applicationId);
+    String correlationId = correlationFor(app);
+    CB_IDVCompletedHandler.handleFromStatus(applicationId, app.Account__c, CB_OnboardingConstants.IDV_PASS, correlationId);
+    return continueAfterIdv(applicationId, app, correlationId);
+  }
+
+  public static Result resumeFromBureau(Id applicationId) {
+    CB_Onboarding_Application__c app = CB_OnboardingApplicationService.getRequired(applicationId);
+    return continueAfterBureau(applicationId, app, correlationFor(app));
+  }
+
+  public static Result resumeFromScreening(Id applicationId) {
+    CB_Onboarding_Application__c app = CB_OnboardingApplicationService.getRequired(applicationId);
+    return continueAfterScreening(applicationId, app, correlationFor(app));
+  }
+
+  public static Result resumeFromKyc(Id applicationId) {
+    CB_Onboarding_Application__c app = CB_OnboardingApplicationService.getRequired(applicationId);
+    return continueAfterKyc(applicationId, app, correlationFor(app));
+  }
+
+  public static Result resumeFromKyb(Id applicationId) {
+    return runRetailSingle(applicationId, 'PASS');
+  }
+
+  private static Result continueAfterIdv(Id applicationId, CB_Onboarding_Application__c app, String correlationId) {
+    return continueAfterBureau(applicationId, app, correlationId);
+  }
+
+  private static Result continueAfterBureau(Id applicationId, CB_Onboarding_Application__c app, String correlationId) {
+    return continueAfterScreening(applicationId, app, correlationId);
+  }
+
+  private static Result continueAfterScreening(Id applicationId, CB_Onboarding_Application__c app, String correlationId) {
+    CB_ScreeningCompletedHandler.handleFromStatus(applicationId, app.Account__c, 'CLEAR', correlationId);
+    return continueAfterKyc(applicationId, app, correlationId);
+  }
+
+  private static Result continueAfterKyc(Id applicationId, CB_Onboarding_Application__c app, String correlationId) {
+    CB_KYCDecisionHandler.handleFromStatus(applicationId, app.Account__c, CB_OnboardingConstants.KYC_APPROVE, correlationId);
+    return openAccount(applicationId, app);
+  }
+
   private static Result openAccount(Id applicationId, CB_Onboarding_Application__c app) {
     String coreFinId = 'MOCK-FA-' + String.valueOf(Crypto.getRandomInteger()).replace('-', '');
     Map<String, Object> payload = new Map<String, Object>{

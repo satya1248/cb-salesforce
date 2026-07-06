@@ -67,7 +67,8 @@ sf project deploy start -o cb-dev
 | 1b Retail OmniScript journey | Planned |
 | 1c SME OmniScript journey | Planned |
 | 1d Partner institution onboarding | Planned |
-| 1e MuleSoft mock APIs | Planned |
+| 1e MuleSoft mock APIs + async orchestration | **Done** (Phase B) |
+| Phase C Experience Cloud customer site | Planned |
 
 ## Mock API strategy (Wave 1)
 

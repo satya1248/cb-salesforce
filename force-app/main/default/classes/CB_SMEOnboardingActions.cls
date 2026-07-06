@@ -36,22 +36,18 @@ public with sharing class CB_SMEOnboardingActions {
                 Status__c = CB_OnboardingConstants.STATUS_IN_PROGRESS,
                 Correlation_Id__c = correlationId,
                 CRN__c = req.crn,
-                Entity_Type__c = 'Limited_Company'
+                Entity_Type__c = 'Limited_Company',
+                Test_Persona__c = req.testPersona
             );
             insert app;
 
             CB_PlatformEventPublisher.publishOnboardingSubmitted(app.Id, business.Id, correlationId);
-            CB_MockOrchestrator.Result mockResult = CB_MockOrchestrator.runSmeSingle(
-                app.Id,
-                req.crn,
-                req.testPersona
-            );
 
             CreateResult result = new CreateResult();
             result.accountId = business.Id;
             result.applicationId = app.Id;
-            result.message = mockResult.message;
-            result.finalStatus = mockResult.finalStatus;
+            result.message = 'SME application submitted for async processing';
+            result.finalStatus = CB_OnboardingConstants.STATUS_IN_PROGRESS;
             results.add(result);
         }
         return results;

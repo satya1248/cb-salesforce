@@ -2,7 +2,8 @@ public with sharing class CB_OnboardingApplicationService {
     public static CB_Onboarding_Application__c getRequired(Id applicationId) {
         CB_Onboarding_Application__c app = [
             SELECT Id, Name, Account__c, Status__c, Application_Type__c, Correlation_Id__c,
-                   IDV_Status__c, KYC_Decision__c, Risk_Tier__c, Product_Code__c, Channel__c
+                   IDV_Status__c, KYC_Decision__c, Risk_Tier__c, Product_Code__c, Channel__c,
+                   Test_Persona__c, CRN__c
             FROM CB_Onboarding_Application__c
             WHERE Id = :applicationId
             LIMIT 1

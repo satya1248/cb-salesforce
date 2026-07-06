@@ -13,4 +13,12 @@
     </nameField>
     <pluralLabel>CB Onboarding Applications</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>CB onboarding application record page</comment>
+        <content>CB_Onboarding_Application_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
 </CustomObject>

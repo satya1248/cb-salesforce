@@ -1,28 +1,37 @@
 @IsTest
 private class CB_OnboardingScenariosTest {
+    private static void enableOrchestrationMock() {
+        Test.setMock(HttpCalloutMock.class, new CB_IntegrationOrchestrationMock());
+    }
+
     @IsTest
     static void testPepHit() {
+        enableOrchestrationMock();
         assertPersona('PEP_HIT', CB_OnboardingConstants.STATUS_UNDER_REVIEW, false);
     }
 
     @IsTest
     static void testKycRefer() {
+        enableOrchestrationMock();
         assertPersona('KYC_REFER', CB_OnboardingConstants.STATUS_UNDER_REVIEW, false);
     }
 
     @IsTest
     static void testKycDecline() {
+        enableOrchestrationMock();
         assertPersona('KYC_DECLINE', CB_OnboardingConstants.STATUS_REJECTED, false);
     }
 
     @IsTest
     static void testWeakBureauMatch() {
+        enableOrchestrationMock();
         assertPersona('WEAK_MATCH', CB_OnboardingConstants.STATUS_UNDER_REVIEW, false);
         System.assertEquals(1, [SELECT COUNT() FROM CB_Compliance_Document__c WHERE Document_Type__c = 'POA']);
     }
 
     @IsTest
     static void testSmeClean() {
+        enableOrchestrationMock();
         CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
         req.companyName = 'Clean Trading Ltd';
         req.crn = CB_OnboardingConstants.CRN_CLEAN;
@@ -31,12 +40,16 @@ private class CB_OnboardingScenariosTest {
         CB_SMEOnboardingActions.CreateResult result = CB_SMEOnboardingActions.createSmeApplication(
             new List<CB_SMEOnboardingActions.CreateRequest>{ req }
         )[0];
+        Test.getEventBus().deliver();
         Test.stopTest();
-        System.assertEquals(CB_OnboardingConstants.STATUS_COMPLETED, result.finalStatus);
+        System.assertEquals(CB_OnboardingConstants.STATUS_COMPLETED, [
+            SELECT Status__c FROM CB_Onboarding_Application__c WHERE Id = :result.applicationId
+        ].Status__c);
     }
 
     @IsTest
     static void testSmeFlaggedCrn() {
+        enableOrchestrationMock();
         CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
         req.companyName = 'Flagged Holdings Ltd';
         req.crn = CB_OnboardingConstants.CRN_FLAGGED;
@@ -45,13 +58,17 @@ private class CB_OnboardingScenariosTest {
         CB_SMEOnboardingActions.CreateResult result = CB_SMEOnboardingActions.createSmeApplication(
             new List<CB_SMEOnboardingActions.CreateRequest>{ req }
         )[0];
+        Test.getEventBus().deliver();
         Test.stopTest();
-        System.assertEquals(CB_OnboardingConstants.STATUS_UNDER_REVIEW, result.finalStatus);
+        System.assertEquals(CB_OnboardingConstants.STATUS_UNDER_REVIEW, [
+            SELECT Status__c FROM CB_Onboarding_Application__c WHERE Id = :result.applicationId
+        ].Status__c);
         System.assert([SELECT COUNT() FROM Case WHERE RecordType.DeveloperName = 'CB_KYB_Review'] > 0);
     }
 
     @IsTest
     static void testSmeDissolvedCrn() {
+        enableOrchestrationMock();
         CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
         req.companyName = 'Dissolved Co Ltd';
         req.crn = CB_OnboardingConstants.CRN_DISSOLVED;
@@ -60,8 +77,11 @@ private class CB_OnboardingScenariosTest {
         CB_SMEOnboardingActions.CreateResult result = CB_SMEOnboardingActions.createSmeApplication(
             new List<CB_SMEOnboardingActions.CreateRequest>{ req }
         )[0];
+        Test.getEventBus().deliver();
         Test.stopTest();
-        System.assertEquals(CB_OnboardingConstants.STATUS_REJECTED, result.finalStatus);
+        System.assertEquals(CB_OnboardingConstants.STATUS_REJECTED, [
+            SELECT Status__c FROM CB_Onboarding_Application__c WHERE Id = :result.applicationId
+        ].Status__c);
     }
 
     @IsTest
@@ -77,37 +97,59 @@ private class CB_OnboardingScenariosTest {
         Test.stopTest();
         System.assertEquals('Active', result.finalStatus);
         System.assertEquals('Active', [SELECT Status__c FROM CB_Partner_Config__c WHERE Id = :result.partnerConfigId].Status__c);
+        System.assertNotEquals(null, [SELECT API_Client_Secret__c FROM CB_Partner_Config__c WHERE Id = :result.partnerConfigId].API_Client_Secret__c);
     }
 
     @IsTest
     static void testPartnerCustomerApi() {
+        enableOrchestrationMock();
         CB_PartnerOnboardingActions.CreateRequest partnerReq = new CB_PartnerOnboardingActions.CreateRequest();
         partnerReq.partnerName = 'API Partner Bank';
         partnerReq.partnerId = 'PARTNER-API-001';
         partnerReq.testPersona = 'PASS';
-        CB_PartnerOnboardingActions.createPartnerInstitution(new List<CB_PartnerOnboardingActions.CreateRequest>{ partnerReq });
+        CB_PartnerOnboardingActions.CreateResult partner = CB_PartnerOnboardingActions.createPartnerInstitution(
+            new List<CB_PartnerOnboardingActions.CreateRequest>{ partnerReq }
+        )[0];
+        String apiKey = [SELECT API_Client_Secret__c FROM CB_Partner_Config__c WHERE Id = :partner.partnerConfigId].API_Client_Secret__c;
 
-        RestRequest req = new RestRequest();
-        RestResponse res = new RestResponse();
-        req.requestURI = '/services/apexrest/cb/v1/onboarding/';
-        req.httpMethod = 'POST';
-        req.requestBody = Blob.valueOf(JSON.serialize(new Map<String, Object>{
-            'partnerId' => 'PARTNER-API-001',
+        RestRequest createReq = new RestRequest();
+        RestResponse createRes = new RestResponse();
+        createReq.requestURI = '/services/apexrest/cb/v1/onboarding/applications';
+        createReq.httpMethod = 'POST';
+        createReq.headers.put('X-Partner-Id', 'PARTNER-API-001');
+        createReq.headers.put('X-API-Key', apiKey);
+        createReq.requestBody = Blob.valueOf(JSON.serialize(new Map<String, Object>{
             'partnerReference' => 'REF-1001',
             'firstName' => 'Sam',
             'lastName' => 'Lee',
             'email' => 'sam@example.com',
             'testPersona' => 'PASS'
         }));
-        RestContext.request = req;
-        RestContext.response = res;
+        RestContext.request = createReq;
+        RestContext.response = createRes;
 
         Test.startTest();
-        CB_PartnerCustomerRest.ApplicationResponse response = CB_PartnerCustomerRest.createApplication();
+        CB_PartnerCustomerRest.ApplicationResponse created = CB_PartnerCustomerRest.postApplication();
+        System.assertEquals(201, createRes.statusCode);
+        System.assertEquals(CB_OnboardingConstants.STATUS_DRAFT, created.status);
+
+        RestRequest submitReq = new RestRequest();
+        RestResponse submitRes = new RestResponse();
+        submitReq.requestURI = '/services/apexrest/cb/v1/onboarding/applications/' + created.applicationId + '/submit';
+        submitReq.httpMethod = 'POST';
+        submitReq.headers.put('X-Partner-Id', 'PARTNER-API-001');
+        submitReq.headers.put('X-API-Key', apiKey);
+        RestContext.request = submitReq;
+        RestContext.response = submitRes;
+        CB_PartnerCustomerRest.ApplicationResponse submitted = CB_PartnerCustomerRest.postApplication();
+        Test.getEventBus().deliver();
         Test.stopTest();
 
-        System.assertEquals(CB_OnboardingConstants.STATUS_COMPLETED, response.status);
-        System.assertEquals('Partner_API', [SELECT Channel__c FROM CB_Onboarding_Application__c WHERE Id = :response.applicationId].Channel__c);
+        System.assertEquals(202, submitRes.statusCode);
+        System.assertEquals(CB_OnboardingConstants.STATUS_COMPLETED, [
+            SELECT Status__c FROM CB_Onboarding_Application__c WHERE Id = :created.applicationId
+        ].Status__c);
+        System.assertEquals('Partner_API', [SELECT Channel__c FROM CB_Onboarding_Application__c WHERE Id = :created.applicationId].Channel__c);
     }
 
     @IsTest
@@ -138,6 +180,41 @@ private class CB_OnboardingScenariosTest {
         System.assertEquals(CB_OnboardingConstants.STATUS_REJECTED, [SELECT Status__c FROM CB_Onboarding_Application__c WHERE Id = :app.Id].Status__c);
     }
 
+    @IsTest
+    static void testResumeAfterScreeningCase() {
+        enableOrchestrationMock();
+        CB_RetailOnboardingActions.CreateRequest req = new CB_RetailOnboardingActions.CreateRequest();
+        req.firstName = 'Resume';
+        req.lastName = 'Screening';
+        req.email = 'resume.screen@example.com';
+        req.testPersona = 'SANCTIONS_HIT';
+
+        Test.startTest();
+        CB_RetailOnboardingActions.CreateResult created = CB_RetailOnboardingActions.createRetailApplication(
+            new List<CB_RetailOnboardingActions.CreateRequest>{ req }
+        )[0];
+        Test.getEventBus().deliver();
+        Test.stopTest();
+
+        Case screeningCase = [
+            SELECT Id
+            FROM Case
+            WHERE CB_Onboarding_Application__c = :created.applicationId
+            LIMIT 1
+        ];
+
+        CB_ResolveCaseActions.Request resolveReq = new CB_ResolveCaseActions.Request();
+        resolveReq.caseId = screeningCase.Id;
+        resolveReq.clearAndContinue = true;
+
+        CB_ResolveCaseActions.Result resolved = CB_ResolveCaseActions.resolve(
+            new List<CB_ResolveCaseActions.Request>{ resolveReq }
+        )[0];
+
+        System.assertEquals(CB_OnboardingConstants.STATUS_COMPLETED, resolved.finalStatus);
+        System.assertEquals(1, [SELECT COUNT() FROM CB_Fin_Account__c WHERE Onboarding_Application__c = :created.applicationId]);
+    }
+
     private static void assertPersona(String persona, String expectedStatus, Boolean expectFinAccount) {
         CB_RetailOnboardingActions.CreateRequest req = new CB_RetailOnboardingActions.CreateRequest();
         req.firstName = 'Test';
@@ -148,8 +225,11 @@ private class CB_OnboardingScenariosTest {
         CB_RetailOnboardingActions.CreateResult result = CB_RetailOnboardingActions.createRetailApplication(
             new List<CB_RetailOnboardingActions.CreateRequest>{ req }
         )[0];
+        Test.getEventBus().deliver();
         Test.stopTest();
-        System.assertEquals(expectedStatus, result.finalStatus);
+        System.assertEquals(expectedStatus, [
+            SELECT Status__c FROM CB_Onboarding_Application__c WHERE Id = :result.applicationId
+        ].Status__c);
         Integer finCount = [SELECT COUNT() FROM CB_Fin_Account__c WHERE Onboarding_Application__c = :result.applicationId];
         System.assertEquals(expectFinAccount ? 1 : 0, finCount);
     }

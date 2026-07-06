@@ -112,4 +112,20 @@
         <tab>standard-Home</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>CB_Retail_Onboarding</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>CB_SME_Onboarding</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>CB_Partner_Onboarding</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>CB_Partner_Config__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

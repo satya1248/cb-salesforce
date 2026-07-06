@@ -16,6 +16,19 @@ public with sharing class CB_OnboardingSubmittedHandler {
                 evt.Status__c,
                 evt.Payload_Json__c
             );
+            if (CB_IntegrationSettings.isAsyncOrchestrationEnabled()) {
+                System.enqueueJob(new CB_IntegrationOrchestrationQueueable(applicationId));
+            } else {
+                runSyncOrchestration(app);
+            }
         }
+    }
+
+    private static void runSyncOrchestration(CB_Onboarding_Application__c app) {
+        if (app.Application_Type__c == CB_OnboardingConstants.APP_TYPE_SME) {
+            CB_MockOrchestrator.runSmeSingle(app.Id, app.CRN__c, app.Test_Persona__c);
+            return;
+        }
+        CB_MockOrchestrator.runRetailSingle(app.Id, app.Test_Persona__c);
     }
 }

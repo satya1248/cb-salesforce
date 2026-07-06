@@ -4,7 +4,7 @@
         <headerColor>#0070D2</headerColor>
         <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
-    <description>CB Wave 1 retail onboarding demo</description>
+    <description>CB Wave 1 onboarding demo app</description>
     <formFactors>Large</formFactors>
     <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
     <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
@@ -12,10 +12,14 @@
     <label>CB Onboarding</label>
     <navType>Standard</navType>
     <tabs>standard-Home</tabs>
+    <tabs>CB_Retail_Onboarding</tabs>
+    <tabs>CB_SME_Onboarding</tabs>
+    <tabs>CB_Partner_Onboarding</tabs>
     <tabs>CB_Onboarding_Application__c</tabs>
     <tabs>CB_Fin_Account__c</tabs>
     <tabs>standard-Case</tabs>
     <tabs>CB_Screening_Result__c</tabs>
     <tabs>CB_Integration_Log__c</tabs>
+    <tabs>CB_Partner_Config__c</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>
