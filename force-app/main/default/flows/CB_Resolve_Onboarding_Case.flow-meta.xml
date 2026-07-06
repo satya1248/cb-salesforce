@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>Close onboarding-related cases and optionally continue the application.</description>
+    <environments>Default</environments>
+    <interviewLabel>CB Resolve Onboarding Case {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>CB Resolve Onboarding Case</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <status>Active</status>
+
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Screen_Resolve</targetReference>
+        </connector>
+    </start>
+
+    <screens>
+        <name>Screen_Resolve</name>
+        <label>Resolve case</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Action_Resolve</targetReference>
+        </connector>
+        <fields>
+            <name>Clear_And_Continue</name>
+            <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>true</booleanValue>
+            </defaultValue>
+            <fieldText>Clear and continue application</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Resolution</name>
+            <dataType>String</dataType>
+            <fieldText>Resolution notes</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_Done</name>
+        <label>Done</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Done_Text</name>
+            <fieldText>&lt;p&gt;Case closed.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <actionCalls>
+        <name>Action_Resolve</name>
+        <label>Resolve onboarding case</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <actionName>CB_ResolveCaseActions</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Screen_Done</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>caseId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>resolution</name>
+            <value>
+                <elementReference>Resolution</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>clearAndContinue</name>
+            <value>
+                <elementReference>Clear_And_Continue</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+</Flow>

@@ -1,0 +1,11 @@
+{
+  "generatePassword": true,
+  "profileName": "Standard User",
+  "email": "cb.demo.kyc@example.com",
+  "lastName": "KYC Analyst",
+  "alias": "cbkyc",
+  "timeZoneSidKey": "Europe/London",
+  "localeSidKey": "en_GB",
+  "emailEncodingKey": "UTF-8",
+  "languageLocaleKey": "en_US"
+}
