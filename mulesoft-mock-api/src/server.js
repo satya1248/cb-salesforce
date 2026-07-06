@@ -10,6 +10,29 @@ app.use(express.json());
 
 const applications = new Map();
 
+// Optional: Publish mock callbacks into Salesforce (no MuleSoft required).
+// Set:
+// - SF_INSTANCE_URL=https://<yourdomain>.my.salesforce.com
+// - SF_ACCESS_TOKEN=<access token>
+// Then call POST /api/v1/mock/run-onboarding to simulate vendor callbacks.
+async function postToSalesforce(eventType, body) {
+  const instanceUrl = process.env.SF_INSTANCE_URL;
+  const accessToken = process.env.SF_ACCESS_TOKEN;
+  if (!instanceUrl || !accessToken) return { skipped: true };
+
+  const url = `${instanceUrl}/services/apexrest/cb/v1/events/${eventType}`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  const text = await resp.text();
+  return { skipped: false, status: resp.status, body: text };
+}
+
 function correlationId() {
   return uuidv4();
 }
@@ -153,6 +176,84 @@ app.post('/api/v1/v1/screening', (req, res) => {
 // Salesforce event ingress shim (optional local callback)
 app.post('/api/v1/salesforce/events/:eventType', (req, res) => {
   res.json({ accepted: true, eventType: req.params.eventType, payload: req.body });
+});
+
+// End-to-end integration test helper (mock vendor callbacks -> Salesforce events)
+// Body: { applicationId, accountId, testPersona, correlationId? }
+app.post('/api/v1/mock/run-onboarding', async (req, res) => {
+  const applicationId = req.body.applicationId;
+  const accountId = req.body.accountId;
+  const persona = (req.body.testPersona || 'PASS').toUpperCase();
+  const corrId = req.body.correlationId || correlationId();
+
+  if (!applicationId) {
+    return res.status(400).json({ error: 'applicationId is required' });
+  }
+
+  const idvStatus = resolveIdvStatus(persona);
+  const screeningStatus = resolveScreening(persona);
+  const kycDecision = resolveKyc(persona);
+  const corePayload = {
+    coreFinAccountId: `FA-${Date.now()}`,
+    sortCode: '04-00-04',
+    accountNumber: '12345678',
+    iban: 'GB00MOCK00001234567890'
+  };
+
+  const calls = [];
+  calls.push(await postToSalesforce('idv-completed', {
+    applicationId,
+    accountId,
+    status: idvStatus,
+    correlationId: corrId,
+    reasonCode: null,
+    payloadJson: JSON.stringify({ vendorRef: 'mock-idv' })
+  }));
+
+  // Only continue if IDV passes (matches our Wave 1 mock rules)
+  if (idvStatus === 'Pass') {
+    calls.push(await postToSalesforce('screening-completed', {
+      applicationId,
+      accountId,
+      status: screeningStatus,
+      correlationId: corrId,
+      reasonCode: null,
+      payloadJson: JSON.stringify({ matchScore: screeningStatus === 'CLEAR' ? 0 : 88 })
+    }));
+
+    // Only continue if screening clears
+    if (screeningStatus === 'CLEAR') {
+      calls.push(await postToSalesforce('kyc-decision', {
+        applicationId,
+        accountId,
+        status: kycDecision,
+        correlationId: corrId,
+        reasonCode: null,
+        payloadJson: JSON.stringify({ decision: kycDecision })
+      }));
+
+      // Only open account if KYC approves
+      if (kycDecision === 'Approve') {
+        calls.push(await postToSalesforce('account-opened', {
+          applicationId,
+          accountId,
+          status: 'OPENED',
+          correlationId: corrId,
+          reasonCode: null,
+          payloadJson: JSON.stringify(corePayload)
+        }));
+      }
+    }
+  }
+
+  res.json({
+    applicationId,
+    accountId,
+    correlationId: corrId,
+    persona,
+    resolved: { idvStatus, screeningStatus, kycDecision },
+    salesforce: calls
+  });
 });
 
 app.listen(PORT, () => {
