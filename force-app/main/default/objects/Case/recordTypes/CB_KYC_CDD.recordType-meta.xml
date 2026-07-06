@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CB_KYC_CDD</fullName>
+    <active>true</active>
+    <businessProcess>CB_Onboarding_Support</businessProcess>
+    <description>CB KYC / CDD Review</description>
+    <label>KYC / CDD Review</label>
+</RecordType>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CB permission set group: CB Operations</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>CB Operations</label>
+    <permissionSets>CB_KYC_Analyst</permissionSets>
+    <permissionSets>CB_FinCrime_Analyst</permissionSets>
+    <permissionSets>CB_KYB_Analyst</permissionSets>
+    <permissionSets>CB_Service_Agent</permissionSets>
+</PermissionSetGroup>

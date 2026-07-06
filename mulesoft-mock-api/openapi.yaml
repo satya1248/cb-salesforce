@@ -1,0 +1,64 @@
+openapi: 3.0.3
+info:
+  title: CB Wave 1 Mock Integration API
+  version: 1.0.0
+  description: Mock external services for UK BaaS onboarding (Onfido, Companies House, bureau, screening, KYC, core banking).
+servers:
+  - url: http://localhost:3001/api/v1
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /mock/onfido/v1/sessions:
+    post:
+      summary: Create mock IDV session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                applicationId: { type: string }
+                testPersona: { type: string, enum: [PASS, REFER, FAIL] }
+      responses:
+        '200':
+          description: Session created
+  /mock/companies-house/v1/companies/{crn}:
+    get:
+      summary: Company lookup
+      parameters:
+        - in: path
+          name: crn
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Company profile
+  /mock/screening/v1/screen:
+    post:
+      summary: Screen party
+      responses:
+        '200':
+          description: Screening result
+  /mock/kyc/v1/assess:
+    post:
+      summary: KYC decision
+      responses:
+        '200':
+          description: KYC result
+  /mock/core/v1/accounts/open:
+    post:
+      summary: Open current account
+      responses:
+        '200':
+          description: Account opened
+  /v1/onboarding/applications:
+    post:
+      summary: Partner create application
+      responses:
+        '201':
+          description: Created

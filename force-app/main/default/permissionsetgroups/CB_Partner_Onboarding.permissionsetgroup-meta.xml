@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CB permission set group: CB Partner Onboarding</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>CB Partner Onboarding</label>
+    <permissionSets>CB_Partner_Manager</permissionSets>
+    <permissionSets>CB_KYB_Analyst</permissionSets>
+</PermissionSetGroup>

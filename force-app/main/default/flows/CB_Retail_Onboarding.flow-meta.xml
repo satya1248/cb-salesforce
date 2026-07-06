@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>CB Wave 1 retail current account onboarding with mock integrations</description>
+    <environments>Default</environments>
+    <interviewLabel>CB Retail Onboarding {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>CB Retail Onboarding</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Screen_Collect_Details</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <screens>
+        <name>Screen_Collect_Details</name>
+        <label>Your details</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Action_Create_Application</targetReference>
+        </connector>
+        <fields>
+            <name>First_Name</name>
+            <dataType>String</dataType>
+            <fieldText>First name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Last_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Last name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Email</name>
+            <dataType>String</dataType>
+            <fieldText>Email</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Test_Persona</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <stringValue>PASS</stringValue>
+            </defaultValue>
+            <fieldText>Test persona (PASS, REFER, FAIL, SANCTIONS_HIT, DECLINE)</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Screen_Result</name>
+        <label>Application result</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Result_Message</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Status:&lt;/b&gt; {!Action_Create_Application.finalStatus}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Message:&lt;/b&gt; {!Action_Create_Application.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application Id:&lt;/b&gt; {!Action_Create_Application.applicationId}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <actionCalls>
+        <name>Action_Create_Application</name>
+        <label>Create retail application</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <actionName>CB_RetailOnboardingActions</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Screen_Result</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>firstName</name>
+            <value>
+                <elementReference>First_Name</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>lastName</name>
+            <value>
+                <elementReference>Last_Name</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>email</name>
+            <value>
+                <elementReference>Email</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>testPersona</name>
+            <value>
+                <elementReference>Test_Persona</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+</Flow>

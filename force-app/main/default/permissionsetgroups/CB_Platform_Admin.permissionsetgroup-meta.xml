@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>CB permission set group: CB Platform Admin</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>CB Platform Admin Group</label>
+    <permissionSets>CB_Admin</permissionSets>
+</PermissionSetGroup>
