@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>UBOs, joint holders, signatories</description>
+    <enableActivities>true</enableActivities>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>CB Party Relationship</label>
+    <nameField>
+        <label>CB Party Relationship Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>CB Party Relationships</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

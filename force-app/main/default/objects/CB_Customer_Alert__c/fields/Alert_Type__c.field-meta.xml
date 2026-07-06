@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Alert_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Alert Type</label>
+    <valueSet><restricted>true</restricted><valueSetDefinition><sorted>false</sorted><value><fullName>Fraud</fullName><default>false</default><label>Fraud</label></value><value><fullName>Payment</fullName><default>false</default><label>Payment</label></value><value><fullName>PEP</fullName><default>false</default><label>PEP</label></value><value><fullName>Screening</fullName><default>false</default><label>Screening</label></value><value><fullName>Suspension</fullName><default>false</default><label>Suspension</label></value><value><fullName>Deceased</fullName><default>false</default><label>Deceased</label></value><value><fullName>General</fullName><default>false</default><label>General</label></value></valueSetDefinition></valueSet>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+</CustomField>

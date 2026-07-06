@@ -1,0 +1,10 @@
+{
+  "orgName": "CB Banking Dev",
+  "edition": "Enterprise",
+  "features": ["PersonAccounts", "ContactsToMultipleAccounts", "ServiceCloud"],
+  "settings": {
+    "lightningExperienceSettings": { "enableS1DesktopEnabled": true },
+    "omniChannelSettings": { "enableOmniChannel": true },
+    "caseSettings": { "enableCaseFeed": true }
+  }
+}

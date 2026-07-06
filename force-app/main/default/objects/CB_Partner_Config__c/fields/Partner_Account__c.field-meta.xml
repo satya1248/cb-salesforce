@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Partner_Account__c</fullName>
+    <externalId>false</externalId>
+    <label>Partner Account</label>
+    <referenceTo>Account</referenceTo>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <relationshipLabel>CB Partner Configs</relationshipLabel>
+    <relationshipName>CB_Partner_Configs</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

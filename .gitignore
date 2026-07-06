@@ -1,0 +1,5 @@
+.sf/
+.sfdx/
+.localdevserver/
+.DS_Store
+cb-salesforce/

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>KYC/KYB evidence documents</description>
+    <enableActivities>true</enableActivities>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>CB Compliance Document</label>
+    <nameField>
+        <label>CB Compliance Document Name</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>CB Compliance Documents</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

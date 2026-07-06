@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Sanctions/PEP/adverse media screening summary</description>
+    <enableActivities>true</enableActivities>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>CB Screening Result</label>
+    <nameField>
+        <displayFormat>SCR-{000000}</displayFormat>
+        <label>CB Screening Result Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>CB Screening Results</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

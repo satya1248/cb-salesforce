@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Master onboarding record for retail, SME, and partner-customer journeys</description>
+    <enableActivities>true</enableActivities>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <label>CB Onboarding Application</label>
+    <nameField>
+        <displayFormat>CB-APP-{000000}</displayFormat>
+        <label>CB Onboarding Application Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>CB Onboarding Applications</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

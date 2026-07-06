@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sanctions_Status__c</fullName>
+    <externalId>false</externalId>
+    <label>Sanctions Status</label>
+    <valueSet><restricted>true</restricted><valueSetDefinition><sorted>false</sorted><value><fullName>Clear</fullName><default>false</default><label>Clear</label></value><value><fullName>Potential_Match</fullName><default>false</default><label>Potential_Match</label></value><value><fullName>Confirmed_Match</fullName><default>false</default><label>Confirmed_Match</label></value></valueSetDefinition></valueSet>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+</CustomField>
