@@ -13,4 +13,5 @@
     </nameField>
     <pluralLabel>CB Partner Configs</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
+    <compactLayoutAssignment>CB_Partner_Config_Header</compactLayoutAssignment>
 </CustomObject>

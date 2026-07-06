@@ -32,6 +32,11 @@
             <targetReference>Action_Create_Application</targetReference>
         </connector>
         <fields>
+            <name>Intro_Text</name>
+            <fieldText>&lt;p&gt;Enter customer details and click &lt;b&gt;Next&lt;/b&gt; to submit the retail onboarding application.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
             <name>First_Name</name>
             <dataType>String</dataType>
             <fieldText>First name</fieldText>
@@ -75,7 +80,7 @@
         <allowPause>false</allowPause>
         <fields>
             <name>Result_Message</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;Status:&lt;/b&gt; {!Action_Create_Application.finalStatus}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Message:&lt;/b&gt; {!Action_Create_Application.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application Id:&lt;/b&gt; {!Action_Create_Application.applicationId}&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;Application submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Initial status: {!Action_Create_Application.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_Create_Application.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application:&lt;/b&gt; {!Action_Create_Application.applicationId}&lt;/p&gt;&lt;p&gt;Open the &lt;b&gt;CB Onboarding Applications&lt;/b&gt; tab to track progress. Status updates automatically as integrations complete.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>

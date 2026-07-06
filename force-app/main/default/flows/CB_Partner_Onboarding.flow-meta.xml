@@ -23,6 +23,11 @@
             <targetReference>Action_Partner</targetReference>
         </connector>
         <fields>
+            <name>Intro_Text</name>
+            <fieldText>&lt;p&gt;Enter partner institution details and click &lt;b&gt;Next&lt;/b&gt; to start partner onboarding.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
             <name>Partner_Name</name>
             <dataType>String</dataType>
             <fieldText>Partner name</fieldText>
@@ -57,7 +62,7 @@
         <allowFinish>true</allowFinish>
         <fields>
             <name>Result_Text</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;Status:&lt;/b&gt; {!Action_Partner.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_Partner.message}&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;Partner onboarding result&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Status: {!Action_Partner.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_Partner.message}&lt;/p&gt;&lt;p&gt;View partner configuration on the &lt;b&gt;CB Partner Config&lt;/b&gt; tab.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>

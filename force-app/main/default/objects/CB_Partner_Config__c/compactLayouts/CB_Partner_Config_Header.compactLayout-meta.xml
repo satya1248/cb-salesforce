@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CB_Partner_Config_Header</fullName>
+    <fields>Partner_Id__c</fields>
+    <fields>Status__c</fields>
+    <fields>Partner_Account__c</fields>
+    <fields>Rate_Tier__c</fields>
+    <label>CB Partner Config Header</label>
+</CompactLayout>

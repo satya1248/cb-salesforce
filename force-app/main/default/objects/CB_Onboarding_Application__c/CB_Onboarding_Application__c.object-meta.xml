@@ -13,6 +13,7 @@
     </nameField>
     <pluralLabel>CB Onboarding Applications</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
+    <compactLayoutAssignment>CB_Application_Header</compactLayoutAssignment>
     <actionOverrides>
         <actionName>View</actionName>
         <comment>CB onboarding application record page</comment>
