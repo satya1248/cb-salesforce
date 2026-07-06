@@ -13,4 +13,11 @@
     </nameField>
     <pluralLabel>CB Screening Results</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>CB_Screening_Result_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
 </CustomObject>

@@ -13,4 +13,11 @@
     </nameField>
     <pluralLabel>CB Financial Accounts</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>CB_Fin_Account_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
 </CustomObject>

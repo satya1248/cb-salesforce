@@ -14,4 +14,11 @@
     <pluralLabel>CB Partner Configs</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
     <compactLayoutAssignment>CB_Partner_Config_Header</compactLayoutAssignment>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>CB_Partner_Config_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
 </CustomObject>

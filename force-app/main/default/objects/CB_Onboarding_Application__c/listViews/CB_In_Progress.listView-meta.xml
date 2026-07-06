@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ListView xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>CB_In_Progress</fullName>
+    <columns>NAME</columns>
+    <columns>Account__c</columns>
+    <columns>Application_Type__c</columns>
+    <columns>Status__c</columns>
+    <columns>Channel__c</columns>
+    <columns>Correlation_Id__c</columns>
     <filterScope>Everything</filterScope>
     <label>CB In Progress</label>
     <filters>

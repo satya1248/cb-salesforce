@@ -13,4 +13,11 @@
     </nameField>
     <pluralLabel>CB Integration Logs</pluralLabel>
     <sharingModel>ReadWrite</sharingModel>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <content>CB_Integration_Log_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+    </actionOverrides>
 </CustomObject>
