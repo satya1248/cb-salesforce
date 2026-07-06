@@ -1,4 +1,3 @@
-.flow-host {
-    min-height: calc(100vh - 8rem);
-    padding: 0.75rem;
+.launcher {
+    min-height: 12rem;
 }
