@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>CB Wave 1 partner institution onboarding</description>
+    <label>CB Partner Onboarding</label>
+    <processType>Flow</processType>
+    <status>Active</status>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Screen_Partner</targetReference>
+        </connector>
+    </start>
+    <screens>
+        <name>Screen_Partner</name>
+        <label>Partner institution</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <connector>
+            <targetReference>Action_Partner</targetReference>
+        </connector>
+        <fields>
+            <name>Partner_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Partner name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Partner_Id</name>
+            <dataType>String</dataType>
+            <fieldText>Partner ID</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Test_Persona</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <stringValue>PASS</stringValue>
+            </defaultValue>
+            <fieldText>Test persona (PASS auto-activates, REFER leaves DD case open)</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Screen_Partner_Result</name>
+        <label>Result</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <allowFinish>true</allowFinish>
+        <fields>
+            <name>Result_Text</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Status:&lt;/b&gt; {!Action_Partner.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_Partner.message}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <actionCalls>
+        <name>Action_Partner</name>
+        <label>Create partner institution</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <actionName>CB_PartnerOnboardingActions</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Screen_Partner_Result</targetReference>
+        </connector>
+        <inputParameters>
+            <name>partnerName</name>
+            <value>
+                <elementReference>Partner_Name</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>partnerId</name>
+            <value>
+                <elementReference>Partner_Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>testPersona</name>
+            <value>
+                <elementReference>Test_Persona</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+</Flow>

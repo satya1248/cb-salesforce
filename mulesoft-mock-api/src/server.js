@@ -46,15 +46,22 @@ function resolveIdvStatus(persona) {
 
 function resolveScreening(persona) {
   const p = (persona || 'CLEAR').toUpperCase();
-  if (p === 'SANCTIONS_HIT' || p === 'PEP_HIT' || p === 'ADVERSE_MEDIA') return 'POTENTIAL_MATCH';
+  if (['SANCTIONS_HIT', 'PEP_HIT', 'ADVERSE_MEDIA'].includes(p)) return 'POTENTIAL_MATCH';
   return 'CLEAR';
 }
 
 function resolveKyc(persona) {
   const p = (persona || 'PASS').toUpperCase();
+  if (p === 'KYC_DECLINE') return 'Decline';
+  if (p === 'KYC_REFER' || p === 'REFER') return 'Refer';
   if (p === 'DECLINE') return 'Decline';
-  if (p === 'REFER') return 'Refer';
   return 'Approve';
+}
+
+function resolveBureau(persona) {
+  const p = (persona || 'STRONG_MATCH').toUpperCase();
+  if (p === 'WEAK_MATCH' || p === 'NO_MATCH') return p;
+  return 'STRONG_MATCH';
 }
 
 // Health
@@ -191,6 +198,7 @@ app.post('/api/v1/mock/run-onboarding', async (req, res) => {
   }
 
   const idvStatus = resolveIdvStatus(persona);
+  const bureauStatus = resolveBureau(persona);
   const screeningStatus = resolveScreening(persona);
   const kycDecision = resolveKyc(persona);
   const corePayload = {
@@ -212,6 +220,10 @@ app.post('/api/v1/mock/run-onboarding', async (req, res) => {
 
   // Only continue if IDV passes (matches our Wave 1 mock rules)
   if (idvStatus === 'Pass') {
+    if (bureauStatus !== 'STRONG_MATCH') {
+      // POA path - stop after bureau equivalent (no further SF callbacks in this helper)
+      return res.json({ applicationId, accountId, correlationId: corrId, persona, resolved: { idvStatus, bureauStatus }, salesforce: calls });
+    }
     calls.push(await postToSalesforce('screening-completed', {
       applicationId,
       accountId,

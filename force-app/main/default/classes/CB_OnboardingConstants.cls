@@ -3,7 +3,9 @@ public with sharing class CB_OnboardingConstants {
     public static final String PRODUCT_CURR_SME = 'CB_CURR_SME_UK';
     public static final String APP_TYPE_RETAIL = 'Retail';
     public static final String APP_TYPE_SME = 'SME';
+    public static final String APP_TYPE_PARTNER_CUSTOMER = 'Partner_Customer';
     public static final String CHANNEL_WEB = 'Web';
+    public static final String CHANNEL_PARTNER_API = 'Partner_API';
 
     public static final String STATUS_DRAFT = 'Draft';
     public static final String STATUS_IN_PROGRESS = 'In_Progress';
@@ -21,6 +23,16 @@ public with sharing class CB_OnboardingConstants {
     public static final String KYC_APPROVE = 'Approve';
     public static final String KYC_REFER = 'Refer';
     public static final String KYC_DECLINE = 'Decline';
+
+    public static final String BUREAU_STRONG = 'STRONG_MATCH';
+    public static final String BUREAU_WEAK = 'WEAK_MATCH';
+    public static final String BUREAU_NONE = 'NO_MATCH';
+
+    public static final String CRN_CLEAN = '12345678';
+    public static final String CRN_FLAGGED = '87654321';
+    public static final String CRN_DISSOLVED = '11111111';
+
+    public static final Integer APPLICATION_EXPIRY_DAYS = 30;
 
     public static final String RT_KYC_CDD = 'CB_KYC_CDD';
     public static final String RT_SCREENING = 'CB_Screening';

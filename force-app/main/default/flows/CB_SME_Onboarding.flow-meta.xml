@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <description>CB Wave 1 SME business current account onboarding</description>
+    <label>CB SME Onboarding</label>
+    <processType>Flow</processType>
+    <status>Active</status>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Screen_SME</targetReference>
+        </connector>
+    </start>
+    <screens>
+        <name>Screen_SME</name>
+        <label>Business details</label>
+        <locationX>176</locationX>
+        <locationY>134</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <connector>
+            <targetReference>Action_SME</targetReference>
+        </connector>
+        <fields>
+            <name>Company_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Company name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>CRN</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <stringValue>12345678</stringValue>
+            </defaultValue>
+            <fieldText>Companies House CRN (12345678 clean, 87654321 flagged, 11111111 dissolved)</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Test_Persona</name>
+            <dataType>String</dataType>
+            <defaultValue>
+                <stringValue>PASS</stringValue>
+            </defaultValue>
+            <fieldText>Test persona</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Screen_SME_Result</name>
+        <label>Result</label>
+        <locationX>176</locationX>
+        <locationY>458</locationY>
+        <allowFinish>true</allowFinish>
+        <fields>
+            <name>Result_Text</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Status:&lt;/b&gt; {!Action_SME.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_SME.message}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <actionCalls>
+        <name>Action_SME</name>
+        <label>Create SME application</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <actionName>CB_SMEOnboardingActions</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Screen_SME_Result</targetReference>
+        </connector>
+        <inputParameters>
+            <name>companyName</name>
+            <value>
+                <elementReference>Company_Name</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>crn</name>
+            <value>
+                <elementReference>CRN</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>testPersona</name>
+            <value>
+                <elementReference>Test_Persona</elementReference>
+            </value>
+        </inputParameters>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </actionCalls>
+</Flow>
