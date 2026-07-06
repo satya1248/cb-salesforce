@@ -1,3 +1,20 @@
-.launcher {
-    min-height: 12rem;
+:host {
+    display: block;
+    height: calc(100vh - 9rem);
+    overflow: auto;
+}
+
+.flow-shell {
+    min-height: calc(100vh - 9rem);
+    padding-bottom: 8rem;
+}
+
+.flow-toolbar {
+    border-bottom: 1px solid #e5e5e5;
+    background: #fafaf9;
+}
+
+.flow-host {
+    padding: 0.75rem;
+    min-height: 40rem;
 }

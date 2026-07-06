@@ -1,23 +1,13 @@
 import { LightningElement, api } from 'lwc';
-import { NavigationMixin } from 'lightning/navigation';
 
-export default class CbOnboardingFlowHost extends NavigationMixin(LightningElement) {
+export default class CbOnboardingFlowHost extends LightningElement {
     @api flowApiName;
 
-    connectedCallback() {
-        // Open the flow in the standard Lightning runtime (footer buttons render correctly).
-        window.setTimeout(() => this.openFlow(), 0);
-    }
-
-    openFlow() {
+    openFlowFullPage() {
         if (!this.flowApiName) {
             return;
         }
-        this[NavigationMixin.Navigate]({
-            type: 'standard__flow',
-            attributes: {
-                flowApiName: this.flowApiName
-            }
-        });
+        // Direct Lightning flow URL works in all orgs (standard__flow page ref does not).
+        window.location.assign(`/lightning/flow/${this.flowApiName}`);
     }
 }

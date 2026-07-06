@@ -1,13 +1,15 @@
 <template>
-    <div class="launcher slds-p-around_large slds-text-align_center">
-        <h2 class="slds-text-heading_medium slds-m-bottom_small">CB Onboarding</h2>
-        <p class="slds-m-bottom_medium">
-            The onboarding flow opens in full-page mode so Next and Finish buttons are always visible.
-        </p>
-        <lightning-button
-            variant="brand"
-            label="Open Onboarding Flow"
-            onclick={openFlow}
-        ></lightning-button>
+    <div class="flow-shell">
+        <div class="flow-toolbar slds-p-horizontal_medium slds-p-vertical_x-small">
+            <lightning-button
+                variant="base"
+                label="Open in full page"
+                title="Opens the flow in full-page mode if the Next button is hard to see"
+                onclick={openFlowFullPage}
+            ></lightning-button>
+        </div>
+        <div class="flow-host">
+            <lightning-flow flow-api-name={flowApiName}></lightning-flow>
+        </div>
     </div>
 </template>
