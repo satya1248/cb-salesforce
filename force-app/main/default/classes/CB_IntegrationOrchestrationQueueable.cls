@@ -19,6 +19,7 @@ public with sharing class CB_IntegrationOrchestrationQueueable implements Queuea
         request.correlationId = app.Correlation_Id__c;
         request.testPersona = app.Test_Persona__c;
         request.crn = app.CRN__c;
+        request.nationality = app.Nationality__c;
 
         try {
             HttpResponse response = CB_IntegrationClient.postOrchestration(request);

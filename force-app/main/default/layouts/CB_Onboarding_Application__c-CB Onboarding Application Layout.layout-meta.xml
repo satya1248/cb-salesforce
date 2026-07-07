@@ -56,6 +56,10 @@
                 <behavior>Edit</behavior>
                 <field>Test_Persona__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Nationality__c</field>
+            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>

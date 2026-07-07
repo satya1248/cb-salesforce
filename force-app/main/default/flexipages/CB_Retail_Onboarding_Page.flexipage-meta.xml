@@ -7,6 +7,10 @@
                     <name>flowApiName</name>
                     <value>CB_Retail_Onboarding</value>
                 </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>guideType</name>
+                    <value>Retail</value>
+                </componentInstanceProperties>
                 <componentName>c:cbOnboardingFlowHost</componentName>
                 <identifier>c_cbOnboardingFlowHost_retail</identifier>
             </componentInstance>

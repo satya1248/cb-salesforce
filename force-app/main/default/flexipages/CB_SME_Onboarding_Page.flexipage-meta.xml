@@ -7,6 +7,10 @@
                     <name>flowApiName</name>
                     <value>CB_SME_Onboarding</value>
                 </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>guideType</name>
+                    <value>SME</value>
+                </componentInstanceProperties>
                 <componentName>c:cbOnboardingFlowHost</componentName>
                 <identifier>c_cbOnboardingFlowHost_sme</identifier>
             </componentInstance>

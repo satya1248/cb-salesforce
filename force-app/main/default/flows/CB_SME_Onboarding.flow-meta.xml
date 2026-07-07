@@ -1,82 +1,273 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>CB Wave 1 SME business current account onboarding</description>
+    <description>CB SME business current account onboarding with KYB, director capture, and demo scenarios</description>
     <label>CB SME Onboarding</label>
     <processType>Flow</processType>
     <status>Active</status>
+
+    <choices>
+        <name>choice_crn_clean</name>
+        <choiceText>12345678 — Clean company (STP)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>12345678</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_crn_flagged</name>
+        <choiceText>87654321 — Nominee director flag (KYB review)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>87654321</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_crn_dissolved</name>
+        <choiceText>11111111 — Dissolved company (rejected)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>11111111</stringValue></value>
+    </choices>
+
+    <choices>
+        <name>choice_nat_GB</name>
+        <choiceText>United Kingdom (GB)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>GB</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_nat_IE</name>
+        <choiceText>Ireland (IE)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>IE</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_nat_FR</name>
+        <choiceText>France (FR)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>FR</stringValue></value>
+    </choices>
+
+    <choices>
+        <name>choice_PASS</name>
+        <choiceText>STP — director checks all pass</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>PASS</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_REFER</name>
+        <choiceText>IDV refer</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>REFER</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_SANCTIONS_HIT</name>
+        <choiceText>Sanctions hit</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>SANCTIONS_HIT</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_PEP_HIT</name>
+        <choiceText>PEP hit</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>PEP_HIT</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_KYC_REFER</name>
+        <choiceText>KYC refer</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>KYC_REFER</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_KYC_DECLINE</name>
+        <choiceText>KYC decline</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>KYC_DECLINE</stringValue></value>
+    </choices>
+
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Screen_SME</targetReference>
+            <targetReference>Screen_Business</targetReference>
         </connector>
     </start>
+
     <screens>
-        <name>Screen_SME</name>
+        <name>Screen_Business</name>
         <label>Business details</label>
         <locationX>176</locationX>
         <locationY>134</locationY>
         <allowBack>true</allowBack>
-        <allowFinish>true</allowFinish>
+        <allowFinish>false</allowFinish>
         <connector>
-            <targetReference>Action_SME</targetReference>
+            <targetReference>Screen_Director</targetReference>
         </connector>
         <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
-            <name>Intro_Text</name>
-            <fieldText>&lt;p&gt;Enter business details and click &lt;b&gt;Next&lt;/b&gt; to start SME onboarding.&lt;/p&gt;</fieldText>
+            <name>Intro_Business</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Step 1 of 3 — Business details&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Company data is verified against Companies House (KYB) before individual director checks run.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
             <name>Company_Name</name>
             <dataType>String</dataType>
-            <fieldText>Company name</fieldText>
+            <fieldText>Registered company name</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
         </fields>
         <fields>
             <name>CRN</name>
+            <choiceReferences>choice_crn_clean</choiceReferences>
+            <choiceReferences>choice_crn_flagged</choiceReferences>
+            <choiceReferences>choice_crn_dissolved</choiceReferences>
             <dataType>String</dataType>
-            <defaultValue>
-                <stringValue>12345678</stringValue>
-            </defaultValue>
-            <fieldText>Companies House CRN (12345678 clean, 87654321 flagged, 11111111 dissolved)</fieldText>
+            <defaultSelectedChoiceReference>choice_crn_clean</defaultSelectedChoiceReference>
+            <fieldText>Companies House CRN (demo KYB scenario)</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Reg_Address_Line1</name>
+            <dataType>String</dataType>
+            <fieldText>Registered office address</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>Test_Persona</name>
+            <name>Reg_City</name>
             <dataType>String</dataType>
-            <defaultValue>
-                <stringValue>PASS</stringValue>
-            </defaultValue>
-            <fieldText>Test persona</fieldText>
+            <fieldText>Town / city</fieldText>
             <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Reg_Postcode</name>
+            <dataType>String</dataType>
+            <fieldText>Postcode</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+
+    <screens>
+        <name>Screen_Director</name>
+        <label>Primary director</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <connector>
+            <targetReference>Screen_SME_Scenario</targetReference>
+        </connector>
+        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
+        <fields>
+            <name>Intro_Director</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Step 2 of 3 — Primary director&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Director nationality drives pre-score after KYB passes. Individual IDV, bureau, screening, and KYC mirror the retail journey.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Director_First_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Director first name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Director_Last_Name</name>
+            <dataType>String</dataType>
+            <fieldText>Director last name</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Director_Email</name>
+            <dataType>String</dataType>
+            <fieldText>Director email</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Director_Phone</name>
+            <dataType>String</dataType>
+            <fieldText>Director mobile</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Director_DOB</name>
+            <dataType>Date</dataType>
+            <fieldText>Director date of birth</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Director_Nationality</name>
+            <choiceReferences>choice_nat_GB</choiceReferences>
+            <choiceReferences>choice_nat_IE</choiceReferences>
+            <choiceReferences>choice_nat_FR</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>choice_nat_GB</defaultSelectedChoiceReference>
+            <fieldText>Director nationality (pre-score)</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_SME_Scenario</name>
+        <label>Director check scenario</label>
+        <locationX>176</locationX>
+        <locationY>422</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <connector>
+            <targetReference>Action_SME</targetReference>
+        </connector>
+        <nextOrFinishButtonLabel>Submit application</nextOrFinishButtonLabel>
+        <fields>
+            <name>Intro_SME_Scenario</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Step 3 of 3 — Director integration scenario&lt;/b&gt;&lt;/p&gt;&lt;p&gt;KYB outcome is determined by the CRN chosen in step 1. This scenario drives mock IDV → bureau → screening → KYC for the director (only if KYB passes).&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Demo_Scenario</name>
+            <choiceReferences>choice_PASS</choiceReferences>
+            <choiceReferences>choice_REFER</choiceReferences>
+            <choiceReferences>choice_SANCTIONS_HIT</choiceReferences>
+            <choiceReferences>choice_PEP_HIT</choiceReferences>
+            <choiceReferences>choice_KYC_REFER</choiceReferences>
+            <choiceReferences>choice_KYC_DECLINE</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>choice_PASS</defaultSelectedChoiceReference>
+            <fieldText>Director check scenario (after KYB)</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
     <screens>
         <name>Screen_SME_Result</name>
-        <label>Result</label>
+        <label>Application submitted</label>
         <locationX>176</locationX>
-        <locationY>458</locationY>
+        <locationY>710</locationY>
         <allowFinish>true</allowFinish>
         <fields>
             <name>Result_Text</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;SME application submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Initial status: {!Action_SME.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_SME.message}&lt;/p&gt;&lt;p&gt;Track progress on the &lt;b&gt;CB Onboarding Applications&lt;/b&gt; tab.&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;b&gt;SME application submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Initial status:&lt;/b&gt; {!Action_SME.finalStatus}&lt;/p&gt;&lt;p&gt;&lt;b&gt;KYB:&lt;/b&gt; {!Action_SME.kybDescription}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Pre-score (director):&lt;/b&gt; {!Action_SME.prescoreSummary}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Expected outcome:&lt;/b&gt; {!Action_SME.expectedOutcome}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Director scenario:&lt;/b&gt; {!Action_SME.scenarioDescription}&lt;/p&gt;&lt;p&gt;{!Action_SME.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application ID:&lt;/b&gt; {!Action_SME.applicationId}&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+
     <actionCalls>
         <name>Action_SME</name>
         <label>Create SME application</label>
         <locationX>176</locationX>
-        <locationY>278</locationY>
+        <locationY>566</locationY>
         <actionName>CB_SMEOnboardingActions</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -84,21 +275,51 @@
         </connector>
         <inputParameters>
             <name>companyName</name>
-            <value>
-                <elementReference>Company_Name</elementReference>
-            </value>
+            <value><elementReference>Company_Name</elementReference></value>
         </inputParameters>
         <inputParameters>
             <name>crn</name>
-            <value>
-                <elementReference>CRN</elementReference>
-            </value>
+            <value><elementReference>CRN</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>registeredAddressLine1</name>
+            <value><elementReference>Reg_Address_Line1</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>registeredCity</name>
+            <value><elementReference>Reg_City</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>registeredPostcode</name>
+            <value><elementReference>Reg_Postcode</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>directorFirstName</name>
+            <value><elementReference>Director_First_Name</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>directorLastName</name>
+            <value><elementReference>Director_Last_Name</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>directorEmail</name>
+            <value><elementReference>Director_Email</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>directorPhone</name>
+            <value><elementReference>Director_Phone</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>directorDateOfBirth</name>
+            <value><elementReference>Director_DOB</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>directorNationality</name>
+            <value><elementReference>Director_Nationality</elementReference></value>
         </inputParameters>
         <inputParameters>
             <name>testPersona</name>
-            <value>
-                <elementReference>Test_Persona</elementReference>
-            </value>
+            <value><elementReference>Demo_Scenario</elementReference></value>
         </inputParameters>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>

@@ -1,40 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>CB Wave 1 retail current account onboarding with mock integrations</description>
+    <description>CB retail current account onboarding with realistic data capture and demo scenarios</description>
     <environments>Default</environments>
     <interviewLabel>CB Retail Onboarding {!$Flow.CurrentDateTime}</interviewLabel>
     <label>CB Retail Onboarding</label>
-    <processMetadataValues>
-        <name>BuilderType</name>
-        <value>
-            <stringValue>LightningFlowBuilder</stringValue>
-        </value>
-    </processMetadataValues>
     <processType>Flow</processType>
+    <status>Active</status>
+
+    <choices>
+        <name>choice_nat_GB</name>
+        <choiceText>United Kingdom (GB)</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>GB</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_nat_IE</name>
+        <choiceText>Ireland (IE) — Medium prescore</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>IE</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_nat_FR</name>
+        <choiceText>France (FR) — Medium prescore</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>FR</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_nat_US</name>
+        <choiceText>United States (US) — Medium prescore</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>US</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_nat_IN</name>
+        <choiceText>India (IN) — Medium prescore</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>IN</stringValue></value>
+    </choices>
+
+    <choices>
+        <name>choice_PASS</name>
+        <choiceText>STP — all checks pass</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>PASS</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_REFER</name>
+        <choiceText>IDV refer — KYC/CDD case</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>REFER</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_FAIL</name>
+        <choiceText>IDV fail — rejected</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>FAIL</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_WEAK_MATCH</name>
+        <choiceText>Bureau weak match — POA + KYC case</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>WEAK_MATCH</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_NO_MATCH</name>
+        <choiceText>Bureau no match — POA + KYC case</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>NO_MATCH</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_SANCTIONS_HIT</name>
+        <choiceText>Sanctions screening hit</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>SANCTIONS_HIT</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_PEP_HIT</name>
+        <choiceText>PEP screening hit</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>PEP_HIT</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_ADVERSE_MEDIA</name>
+        <choiceText>Adverse media hit</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>ADVERSE_MEDIA</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_KYC_REFER</name>
+        <choiceText>KYC refer — analyst review</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>KYC_REFER</stringValue></value>
+    </choices>
+    <choices>
+        <name>choice_KYC_DECLINE</name>
+        <choiceText>KYC decline — rejected</choiceText>
+        <dataType>String</dataType>
+        <value><stringValue>KYC_DECLINE</stringValue></value>
+    </choices>
+
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Screen_Collect_Details</targetReference>
+            <targetReference>Screen_Personal</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+
     <screens>
-        <name>Screen_Collect_Details</name>
-        <label>Your details</label>
+        <name>Screen_Personal</name>
+        <label>Personal details</label>
         <locationX>176</locationX>
         <locationY>134</locationY>
         <allowBack>true</allowBack>
-        <allowFinish>true</allowFinish>
+        <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Action_Create_Application</targetReference>
+            <targetReference>Screen_Address</targetReference>
         </connector>
         <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
-            <name>Intro_Text</name>
-            <fieldText>&lt;p&gt;Enter customer details and click &lt;b&gt;Next&lt;/b&gt; to submit the retail onboarding application.&lt;/p&gt;</fieldText>
+            <name>Intro_Personal</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Step 1 of 3 — Personal details&lt;/b&gt;&lt;/p&gt;&lt;p&gt;As in a real retail journey, we capture identity data used for IDV and KYC pre-score.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -54,44 +142,149 @@
         <fields>
             <name>Email</name>
             <dataType>String</dataType>
-            <fieldText>Email</fieldText>
+            <fieldText>Email address</fieldText>
             <fieldType>InputField</fieldType>
             <isRequired>true</isRequired>
         </fields>
         <fields>
-            <name>Test_Persona</name>
+            <name>Phone</name>
             <dataType>String</dataType>
-            <defaultValue>
-                <stringValue>PASS</stringValue>
-            </defaultValue>
-            <fieldText>Test persona (PASS, REFER, FAIL, SANCTIONS_HIT, DECLINE)</fieldText>
+            <fieldText>Mobile phone</fieldText>
             <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Date_Of_Birth</name>
+            <dataType>Date</dataType>
+            <fieldText>Date of birth</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+
     <screens>
-        <name>Screen_Result</name>
-        <label>Application result</label>
+        <name>Screen_Address</name>
+        <label>Address &amp; nationality</label>
         <locationX>176</locationX>
-        <locationY>458</locationY>
-        <allowBack>false</allowBack>
+        <locationY>278</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Screen_Scenario</targetReference>
+        </connector>
+        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
+        <fields>
+            <name>Intro_Address</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Step 2 of 3 — Address &amp; nationality&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Nationality drives &lt;b&gt;pre-score&lt;/b&gt;: UK nationals get Low risk / Simplified CDD; non-UK get Medium risk / Standard CDD.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Nationality</name>
+            <choiceReferences>choice_nat_GB</choiceReferences>
+            <choiceReferences>choice_nat_IE</choiceReferences>
+            <choiceReferences>choice_nat_FR</choiceReferences>
+            <choiceReferences>choice_nat_US</choiceReferences>
+            <choiceReferences>choice_nat_IN</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>choice_nat_GB</defaultSelectedChoiceReference>
+            <fieldText>Nationality</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Address_Line1</name>
+            <dataType>String</dataType>
+            <fieldText>Home address line 1</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>City</name>
+            <dataType>String</dataType>
+            <fieldText>Town / city</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Postcode</name>
+            <dataType>String</dataType>
+            <fieldText>Postcode</fieldText>
+            <fieldType>InputField</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
+    <screens>
+        <name>Screen_Scenario</name>
+        <label>Demo scenario</label>
+        <locationX>176</locationX>
+        <locationY>422</locationY>
+        <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Action_Create_Application</targetReference>
+        </connector>
+        <nextOrFinishButtonLabel>Submit application</nextOrFinishButtonLabel>
         <fields>
-            <name>Result_Message</name>
-            <fieldText>&lt;p&gt;&lt;b&gt;Application submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Initial status: {!Action_Create_Application.finalStatus}&lt;/p&gt;&lt;p&gt;{!Action_Create_Application.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application:&lt;/b&gt; {!Action_Create_Application.applicationId}&lt;/p&gt;&lt;p&gt;Open the &lt;b&gt;CB Onboarding Applications&lt;/b&gt; tab to track progress. Status updates automatically as integrations complete.&lt;/p&gt;</fieldText>
+            <name>Intro_Scenario</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Step 3 of 3 — Demo scenario&lt;/b&gt;&lt;/p&gt;&lt;p&gt;In production, integrations return real results. For Wave 1 demos, pick a scenario to drive mock IDV, bureau, screening, and KYC outcomes. See the guide panel above for full descriptions.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>Demo_Scenario</name>
+            <choiceReferences>choice_PASS</choiceReferences>
+            <choiceReferences>choice_REFER</choiceReferences>
+            <choiceReferences>choice_FAIL</choiceReferences>
+            <choiceReferences>choice_WEAK_MATCH</choiceReferences>
+            <choiceReferences>choice_NO_MATCH</choiceReferences>
+            <choiceReferences>choice_SANCTIONS_HIT</choiceReferences>
+            <choiceReferences>choice_PEP_HIT</choiceReferences>
+            <choiceReferences>choice_ADVERSE_MEDIA</choiceReferences>
+            <choiceReferences>choice_KYC_REFER</choiceReferences>
+            <choiceReferences>choice_KYC_DECLINE</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>choice_PASS</defaultSelectedChoiceReference>
+            <fieldText>Integration test scenario</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Scenario_Help</name>
+            <fieldText>&lt;p&gt;&lt;i&gt;After submit: pre-score runs first, then IDV → bureau → screening → KYC → account open. Refresh the application record on the CB Onboarding Applications tab to see the final status.&lt;/i&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
+
+    <screens>
+        <name>Screen_Result</name>
+        <label>Application submitted</label>
+        <locationX>176</locationX>
+        <locationY>710</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Result_Message</name>
+            <fieldText>&lt;p&gt;&lt;b&gt;Application submitted&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Initial status:&lt;/b&gt; {!Action_Create_Application.finalStatus}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Pre-score:&lt;/b&gt; {!Action_Create_Application.prescoreSummary}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Expected outcome:&lt;/b&gt; {!Action_Create_Application.expectedOutcome}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Scenario:&lt;/b&gt; {!Action_Create_Application.scenarioDescription}&lt;/p&gt;&lt;p&gt;{!Action_Create_Application.message}&lt;/p&gt;&lt;p&gt;&lt;b&gt;Application ID:&lt;/b&gt; {!Action_Create_Application.applicationId}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+
     <actionCalls>
         <name>Action_Create_Application</name>
         <label>Create retail application</label>
         <locationX>176</locationX>
-        <locationY>278</locationY>
+        <locationY>566</locationY>
         <actionName>CB_RetailOnboardingActions</actionName>
         <actionType>apex</actionType>
         <connector>
@@ -100,27 +293,43 @@
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>firstName</name>
-            <value>
-                <elementReference>First_Name</elementReference>
-            </value>
+            <value><elementReference>First_Name</elementReference></value>
         </inputParameters>
         <inputParameters>
             <name>lastName</name>
-            <value>
-                <elementReference>Last_Name</elementReference>
-            </value>
+            <value><elementReference>Last_Name</elementReference></value>
         </inputParameters>
         <inputParameters>
             <name>email</name>
-            <value>
-                <elementReference>Email</elementReference>
-            </value>
+            <value><elementReference>Email</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>phone</name>
+            <value><elementReference>Phone</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>dateOfBirth</name>
+            <value><elementReference>Date_Of_Birth</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>nationality</name>
+            <value><elementReference>Nationality</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>addressLine1</name>
+            <value><elementReference>Address_Line1</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>city</name>
+            <value><elementReference>City</elementReference></value>
+        </inputParameters>
+        <inputParameters>
+            <name>postcode</name>
+            <value><elementReference>Postcode</elementReference></value>
         </inputParameters>
         <inputParameters>
             <name>testPersona</name>
-            <value>
-                <elementReference>Test_Persona</elementReference>
-            </value>
+            <value><elementReference>Demo_Scenario</elementReference></value>
         </inputParameters>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </actionCalls>

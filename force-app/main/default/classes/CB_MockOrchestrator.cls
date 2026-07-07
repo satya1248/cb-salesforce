@@ -33,15 +33,31 @@ public with sharing class CB_MockOrchestrator {
   }
 
   public static Result runRetailSingle(Id applicationId, String testPersona) {
-    CB_Onboarding_Application__c app = CB_OnboardingApplicationService.getRequired(applicationId);
+    CB_Onboarding_Application__c app = [
+      SELECT Id, Account__c, Correlation_Id__c, Nationality__c, Risk_Tier__c, CDD_Level__c
+      FROM CB_Onboarding_Application__c
+      WHERE Id = :applicationId
+      LIMIT 1
+    ];
     String persona = normalize(personaOrDefault(testPersona));
     String correlationId = correlationFor(app);
+    CB_PrescoreService.PrescoreResult prescore = CB_PrescoreService.evaluate(app.Nationality__c, persona);
 
-    CB_IntegrationLogService.log('mock/prescore', 'Inbound', 200, 'Success', correlationId, applicationId, persona, '{"riskTier":"Low"}');
+    CB_IntegrationLogService.log(
+      'mock/prescore',
+      'Inbound',
+      200,
+      'Success',
+      correlationId,
+      applicationId,
+      persona,
+      '{"riskTier":"' + prescore.riskTier + '","cddLevel":"' + prescore.cddLevel + '"}'
+    );
     update new CB_Onboarding_Application__c(
       Id = applicationId,
       Correlation_Id__c = correlationId,
-      Risk_Tier__c = isHighRiskPersona(persona) ? 'High' : 'Low',
+      Risk_Tier__c = prescore.riskTier,
+      CDD_Level__c = prescore.cddLevel,
       Status__c = CB_OnboardingConstants.STATUS_IDV_PENDING,
       Submitted_Date__c = System.now()
     );
@@ -190,10 +206,6 @@ public with sharing class CB_MockOrchestrator {
       return CB_OnboardingConstants.KYC_DECLINE;
     }
     return CB_OnboardingConstants.KYC_APPROVE;
-  }
-
-  private static Boolean isHighRiskPersona(String persona) {
-    return persona == 'SANCTIONS_HIT' || persona == 'PEP_HIT' || persona == 'ADVERSE_MEDIA' || persona == 'KYC_DECLINE';
   }
 
   private static String personaOrDefault(String testPersona) {

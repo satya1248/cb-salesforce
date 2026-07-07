@@ -1,0 +1,92 @@
+<template>
+    <div class="guide slds-box slds-theme_default slds-m-bottom_medium">
+        <div class="slds-p-around_small">
+            <h2 class="slds-text-heading_small slds-m-bottom_x-small">
+                {onboardingType} onboarding — journey &amp; demo scenarios
+            </h2>
+            <p class="slds-text-body_small slds-m-bottom_small">{introText}</p>
+
+            <lightning-accordion allow-multiple-sections-open active-section-name="journey">
+                <lightning-accordion-section name="journey" label="Integration journey (what happens after submit)">
+                    <ol class="journey-list slds-m-left_medium">
+                        <template for:each={journeySteps} for:item="step">
+                            <li key={step.step} class="slds-m-bottom_x-small">
+                                <strong>{step.name}</strong> — {step.detail}
+                            </li>
+                        </template>
+                    </ol>
+                    <p class="slds-text-body_small slds-m-top_small slds-text-color_weak">{afterSubmitText}</p>
+                </lightning-accordion-section>
+
+                <lightning-accordion-section name="prescore" label="Pre-score rules (nationality → risk tier → CDD)">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_x-small">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col"><div class="slds-truncate">Condition</div></th>
+                                <th scope="col"><div class="slds-truncate">Risk</div></th>
+                                <th scope="col"><div class="slds-truncate">CDD</div></th>
+                                <th scope="col"><div class="slds-truncate">Note</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={prescoreRules} for:item="rule">
+                                <tr key={rule.condition}>
+                                    <td>{rule.condition}</td>
+                                    <td>{rule.risk}</td>
+                                    <td>{rule.cdd}</td>
+                                    <td class="slds-text-body_small">{rule.note}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </lightning-accordion-section>
+
+                <lightning-accordion-section name="scenarios" label="Demo scenarios &amp; expected outcomes">
+                    <template if:true={isSme}>
+                        <p class="slds-text-body_small slds-m-bottom_x-small">
+                            <strong>Step 1 — KYB (CRN):</strong> choose a Companies House scenario in the flow.
+                        </p>
+                    </template>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_x-small">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <template if:true={isRetail}>
+                                    <th scope="col"><div class="slds-truncate">Persona</div></th>
+                                </template>
+                                <template if:true={isSme}>
+                                    <th scope="col"><div class="slds-truncate">CRN</div></th>
+                                </template>
+                                <th scope="col"><div class="slds-truncate">Scenario</div></th>
+                                <th scope="col"><div class="slds-truncate">Outcome</div></th>
+                                <th scope="col"><div class="slds-truncate">Case</div></th>
+                                <th scope="col"><div class="slds-truncate">Description</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={scenarioRows} for:item="row">
+                                <tr key={row.rowKey}>
+                                    <template if:true={isRetail}>
+                                        <td><code>{row.key}</code></td>
+                                    </template>
+                                    <template if:true={isSme}>
+                                        <td><code>{row.crn}</code></td>
+                                    </template>
+                                    <td>{row.label}</td>
+                                    <td>{row.outcome}</td>
+                                    <td>{row.caseType}</td>
+                                    <td class="slds-text-body_small">{row.description}</td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <template if:true={isSme}>
+                        <p class="slds-text-body_small slds-m-top_small">
+                            <strong>Step 2 — Director checks:</strong> after clean KYB, use the same retail personas
+                            (PASS, SANCTIONS_HIT, etc.) for IDV → bureau → screening → KYC.
+                        </p>
+                    </template>
+                </lightning-accordion-section>
+            </lightning-accordion>
+        </div>
+    </div>
+</template>

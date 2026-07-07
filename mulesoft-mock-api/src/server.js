@@ -64,7 +64,7 @@ function resolveBureau(persona) {
   return 'STRONG_MATCH';
 }
 
-async function runRetailOnboardingChain({ applicationId, accountId, persona, corrId }) {
+async function runRetailOnboardingChain({ applicationId, accountId, persona, corrId, nationality }) {
   const calls = [];
   const idvStatus = resolveIdvStatus(persona);
   const bureauStatus = resolveBureau(persona);
@@ -154,7 +154,8 @@ app.post('/api/v1/orchestration/onboarding-submitted', async (req, res) => {
     testPersona,
     correlationId: corrId,
     applicationType,
-    crn
+    crn,
+    nationality
   } = req.body;
 
   if (!applicationId) {
@@ -169,9 +170,9 @@ app.post('/api/v1/orchestration/onboarding-submitted', async (req, res) => {
   setImmediate(async () => {
     try {
       if (applicationType === 'SME') {
-        await runSmeOnboardingChain({ applicationId, accountId, persona, corrId: correlation, crn });
+        await runSmeOnboardingChain({ applicationId, accountId, persona, corrId: correlation, crn, nationality });
       } else {
-        await runRetailOnboardingChain({ applicationId, accountId, persona, corrId: correlation });
+        await runRetailOnboardingChain({ applicationId, accountId, persona, corrId: correlation, nationality });
       }
     } catch (err) {
       console.error('Orchestration callback failed', err);

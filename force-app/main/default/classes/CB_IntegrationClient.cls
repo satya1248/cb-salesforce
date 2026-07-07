@@ -6,6 +6,7 @@ public with sharing class CB_IntegrationClient {
         public String correlationId;
         public String testPersona;
         public String crn;
+        public String nationality;
     }
 
     public static HttpResponse postOrchestration(OrchestrationRequest request) {

@@ -32,10 +32,11 @@ private class CB_OnboardingScenariosTest {
     @IsTest
     static void testSmeClean() {
         enableOrchestrationMock();
-        CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
-        req.companyName = 'Clean Trading Ltd';
-        req.crn = CB_OnboardingConstants.CRN_CLEAN;
-        req.testPersona = 'PASS';
+        CB_SMEOnboardingActions.CreateRequest req = buildSmeRequest(
+            'Clean Trading Ltd',
+            CB_OnboardingConstants.CRN_CLEAN,
+            'PASS'
+        );
         Test.startTest();
         CB_SMEOnboardingActions.CreateResult result = CB_SMEOnboardingActions.createSmeApplication(
             new List<CB_SMEOnboardingActions.CreateRequest>{ req }
@@ -50,10 +51,11 @@ private class CB_OnboardingScenariosTest {
     @IsTest
     static void testSmeFlaggedCrn() {
         enableOrchestrationMock();
-        CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
-        req.companyName = 'Flagged Holdings Ltd';
-        req.crn = CB_OnboardingConstants.CRN_FLAGGED;
-        req.testPersona = 'PASS';
+        CB_SMEOnboardingActions.CreateRequest req = buildSmeRequest(
+            'Flagged Holdings Ltd',
+            CB_OnboardingConstants.CRN_FLAGGED,
+            'PASS'
+        );
         Test.startTest();
         CB_SMEOnboardingActions.CreateResult result = CB_SMEOnboardingActions.createSmeApplication(
             new List<CB_SMEOnboardingActions.CreateRequest>{ req }
@@ -69,10 +71,11 @@ private class CB_OnboardingScenariosTest {
     @IsTest
     static void testSmeDissolvedCrn() {
         enableOrchestrationMock();
-        CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
-        req.companyName = 'Dissolved Co Ltd';
-        req.crn = CB_OnboardingConstants.CRN_DISSOLVED;
-        req.testPersona = 'PASS';
+        CB_SMEOnboardingActions.CreateRequest req = buildSmeRequest(
+            'Dissolved Co Ltd',
+            CB_OnboardingConstants.CRN_DISSOLVED,
+            'PASS'
+        );
         Test.startTest();
         CB_SMEOnboardingActions.CreateResult result = CB_SMEOnboardingActions.createSmeApplication(
             new List<CB_SMEOnboardingActions.CreateRequest>{ req }
@@ -213,6 +216,45 @@ private class CB_OnboardingScenariosTest {
 
         System.assertEquals(CB_OnboardingConstants.STATUS_COMPLETED, resolved.finalStatus);
         System.assertEquals(1, [SELECT COUNT() FROM CB_Fin_Account__c WHERE Onboarding_Application__c = :created.applicationId]);
+    }
+
+    @IsTest
+    static void testPrescoreNonUkNationality() {
+        CB_PrescoreService.PrescoreResult result = CB_PrescoreService.evaluate('FR', 'PASS');
+        System.assertEquals('Medium', result.riskTier);
+        System.assertEquals('Standard', result.cddLevel);
+
+        CB_RetailOnboardingActions.CreateRequest req = new CB_RetailOnboardingActions.CreateRequest();
+        req.firstName = 'Marie';
+        req.lastName = 'Dupont';
+        req.email = 'marie@example.com';
+        req.nationality = 'FR';
+        req.testPersona = 'PASS';
+        Test.startTest();
+        CB_RetailOnboardingActions.CreateResult created = CB_RetailOnboardingActions.createRetailApplication(
+            new List<CB_RetailOnboardingActions.CreateRequest>{ req }
+        )[0];
+        Test.stopTest();
+        CB_Onboarding_Application__c app = [
+            SELECT Nationality__c, Risk_Tier__c, CDD_Level__c
+            FROM CB_Onboarding_Application__c
+            WHERE Id = :created.applicationId
+        ];
+        System.assertEquals('FR', app.Nationality__c);
+        System.assertEquals('Medium', app.Risk_Tier__c);
+        System.assertEquals('Standard', app.CDD_Level__c);
+    }
+
+    private static CB_SMEOnboardingActions.CreateRequest buildSmeRequest(String companyName, String crn, String persona) {
+        CB_SMEOnboardingActions.CreateRequest req = new CB_SMEOnboardingActions.CreateRequest();
+        req.companyName = companyName;
+        req.crn = crn;
+        req.testPersona = persona;
+        req.directorFirstName = 'Jane';
+        req.directorLastName = 'Director';
+        req.directorEmail = 'jane.director@example.com';
+        req.directorNationality = 'GB';
+        return req;
     }
 
     private static void assertPersona(String persona, String expectedStatus, Boolean expectFinAccount) {

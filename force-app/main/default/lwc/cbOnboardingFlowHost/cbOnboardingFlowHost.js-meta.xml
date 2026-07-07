@@ -10,6 +10,7 @@
     <targetConfigs>
         <targetConfig targets="lightning__AppPage,lightning__HomePage">
             <property name="flowApiName" type="String" label="Flow API Name" required="true" />
+            <property name="guideType" type="String" label="Guide Type" default="Retail" datasource="Retail,SME,Partner" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
