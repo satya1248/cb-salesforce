@@ -1,20 +1,19 @@
 :host {
     display: block;
-    height: calc(100vh - 9rem);
-    overflow: auto;
+    height: auto;
+    min-height: calc(100vh - 9rem);
 }
 
 .flow-shell {
-    min-height: calc(100vh - 9rem);
-    padding-bottom: 8rem;
+    padding-bottom: 2rem;
 }
 
-.flow-toolbar {
-    border-bottom: 1px solid #e5e5e5;
-    background: #fafaf9;
+.launchpad {
+    border-left: 3px solid #2e844a;
 }
 
-.flow-host {
-    padding: 0.75rem;
-    min-height: 40rem;
+.launchpad-copy {
+    max-width: 40rem;
+    margin-left: auto;
+    margin-right: auto;
 }

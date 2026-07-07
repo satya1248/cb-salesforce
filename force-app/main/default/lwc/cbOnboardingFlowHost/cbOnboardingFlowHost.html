@@ -1,16 +1,27 @@
 <template>
     <div class="flow-shell">
         <c-cb-onboarding-guide guide-type={guideType}></c-cb-onboarding-guide>
-        <div class="flow-toolbar slds-p-horizontal_medium slds-p-vertical_x-small">
-            <lightning-button
-                variant="base"
-                label="Open in full page"
-                title="Opens the flow in full-page mode if the Next button is hard to see"
-                onclick={openFlowFullPage}
-            ></lightning-button>
-        </div>
-        <div class="flow-host">
-            <lightning-flow flow-api-name={flowApiName}></lightning-flow>
+
+        <div class="launchpad slds-box slds-theme_default slds-m-top_medium">
+            <div class="slds-p-around_large slds-text-align_center">
+                <h2 class="slds-text-heading_medium slds-m-bottom_small">
+                    Start {guideType} onboarding
+                </h2>
+                <p class="slds-text-body_regular slds-m-bottom_medium launchpad-copy">
+                    Screen flows must run in full-page mode to show the Next and Submit buttons reliably.
+                    Review the scenario guide above, then launch the flow.
+                </p>
+                <lightning-button
+                    variant="brand"
+                    label="Start onboarding"
+                    title="Opens the onboarding flow in full-page mode"
+                    onclick={openFlowFullPage}
+                    class="slds-m-bottom_small"
+                ></lightning-button>
+                <p class="slds-text-body_small slds-text-color_weak">
+                    You will stay in the CB Onboarding app. Use the browser back button to return to this tab.
+                </p>
+            </div>
         </div>
     </div>
 </template>
