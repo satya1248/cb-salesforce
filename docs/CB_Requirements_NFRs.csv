@@ -1,0 +1,11 @@
+Type,Wave,NFR_ID,Title,Requirement,Status,Priority,Category
+NFR,All Waves,NFR-01,Encryption at rest,All PII and financial identifiers encrypted at rest (Shield Platform Encryption for production),Not Started,Critical,Security
+NFR,All Waves,NFR-02,Authenticated integrations,Integration calls authenticated (Named Credentials OAuth API keys for partners),Partial,Critical,Security
+NFR,All Waves,NFR-03,Correlation ID,Correlation ID on every application and integration log entry,Built,Critical,Observability
+NFR,All Waves,NFR-04,Idempotent event processing,Duplicate platform events must not double-open accounts,Partial,Critical,Reliability
+NFR,All Waves,NFR-05,Application expiry,30 days inactivity leads to Rejected or expired reason code,Built,High,Compliance
+NFR,All Waves,NFR-06,Language support,English UI Wave 1-2; Welsh and localisation Wave 3+,Partial,Medium,Accessibility
+NFR,All Waves,NFR-07,Availability,99.9% Salesforce; MuleSoft HA per enterprise standard,Not Started,High,Reliability
+NFR,All Waves,NFR-08,Audit log retention,CB_Integration_Log__c retains inbound/outbound payloads (retention policy TBD),Partial,High,Compliance
+NFR,All Waves,NFR-09,Role-based access,Role-based access via permission sets and permission set groups,Built,Critical,Security
+NFR,All Waves,NFR-10,No direct vendor callouts,No direct Salesforce to vendor callouts (all via MuleSoft),Built,Critical,Architecture

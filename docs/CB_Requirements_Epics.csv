@@ -1,0 +1,22 @@
+Type,Wave,Epic_ID,Epic_Name,Epic_Summary,Epic_Status,Priority,Owner_Role
+Epic,Wave 0,E0,Architecture foundation,Custom onboarding data model vs FSC decision (ADR-001),Built,High,Enterprise architect
+Epic,Wave 1,E1,Data model and security foundation,Custom objects platform events permission sets integration log,Built,Critical,Platform admin
+Epic,Wave 1,E2,Retail current account onboarding,Retail capture prescore IDV bureau screening KYC core open,Partial,High,Product owner
+Epic,Wave 1,E3,SME business current account onboarding,KYB Companies House director KYC chain,Partial,High,Product owner
+Epic,Wave 1,E4,Partner institution onboarding,Partner DD activation API credentials,Partial,High,Partner onboarding manager
+Epic,Wave 1,E5,Partner customer origination API,REST API for partner-originated applications,Partial,High,Integration lead
+Epic,Wave 1,E6,Case management and analyst workflows,KYC KYB FinCrime cases resolve and resume,Partial,Critical,Operations manager
+Epic,Wave 1,E7,Integration and async orchestration,MuleSoft queueable platform events mock fallback,Built,Critical,Integration lead
+Epic,Wave 1,E8,Internal operations UX,CB Onboarding Lightning app list views demo guide,Built,Medium,Product owner
+Epic,Wave 1,E9,Application lifecycle,30-day expiry scheduler,Built,Medium,CB operations
+Epic,Wave 2,E10,Experience Cloud CB direct,Customer-facing retail and SME digital onboarding,Not Started,Critical,Product owner
+Epic,Wave 2,E11,Live vendor integrations,Onfido CH bureau screening KYC core banking production APIs,Not Started,Critical,Integration lead
+Epic,Wave 2,E12,Operational excellence,SLAs monitoring funnel dashboards alerting,Not Started,High,Operations manager
+Epic,Wave 2,E13,Security and compliance hardening,Shield consent FATF EDD secrets management,Not Started,Critical,DPO
+Epic,Wave 2,E14,Document and evidence management,POA upload virus scan analyst document workflow,Not Started,High,KYC analyst
+Epic,Wave 2,E15,Partner production API,Sandbox webhooks rate limits certification,Not Started,High,Partner onboarding manager
+Epic,Wave 3,E16,Additional products,Savings cards credit referral products,Not Started,Low,Product owner
+Epic,Wave 3,E17,Transaction monitoring handoff,FinCrime alerts to external TM platform,Not Started,Medium,MLRO
+Epic,Wave 3,E18,FSC fit-gap and migration,Evaluate ApplicationForm vs custom model migration,Not Started,Medium,Enterprise architect
+Epic,Wave 3,E19,Multi-language and accessibility,Welsh WCAG 2.1 AA,Not Started,Medium,Product owner
+Epic,Wave 3,E20,Reg 39 reliance,Partner CDD reliance where approved,Not Started,Low,Compliance officer
