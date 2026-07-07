@@ -22,7 +22,6 @@
         <connector>
             <targetReference>Action_Partner</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_Text</name>
             <fieldText>&lt;p&gt;Enter partner institution details and click &lt;b&gt;Next&lt;/b&gt; to start partner onboarding.&lt;/p&gt;</fieldText>

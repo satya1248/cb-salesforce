@@ -99,7 +99,6 @@
         <connector>
             <targetReference>Screen_Director</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_Business</name>
             <fieldText>&lt;p&gt;&lt;b&gt;Step 1 of 3 — Business details&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Company data is verified against Companies House (KYB) before individual director checks run.&lt;/p&gt;</fieldText>
@@ -158,7 +157,6 @@
         <connector>
             <targetReference>Screen_SME_Scenario</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_Director</name>
             <fieldText>&lt;p&gt;&lt;b&gt;Step 2 of 3 — Primary director&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Director nationality drives pre-score after KYB passes. Individual IDV, bureau, screening, and KYC mirror the retail journey.&lt;/p&gt;</fieldText>
@@ -224,7 +222,6 @@
         <connector>
             <targetReference>Action_SME</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Submit application</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_SME_Scenario</name>
             <fieldText>&lt;p&gt;&lt;b&gt;Step 3 of 3 — Director integration scenario&lt;/b&gt;&lt;/p&gt;&lt;p&gt;KYB outcome is determined by the CRN chosen in step 1. This scenario drives mock IDV → bureau → screening → KYC for the director (only if KYB passes).&lt;/p&gt;</fieldText>

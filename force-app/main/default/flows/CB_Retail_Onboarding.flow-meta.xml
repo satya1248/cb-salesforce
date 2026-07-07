@@ -119,7 +119,6 @@
         <connector>
             <targetReference>Screen_Address</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_Personal</name>
             <fieldText>&lt;p&gt;&lt;b&gt;Step 1 of 3 — Personal details&lt;/b&gt;&lt;/p&gt;&lt;p&gt;As in a real retail journey, we capture identity data used for IDV and KYC pre-score.&lt;/p&gt;</fieldText>
@@ -175,7 +174,6 @@
         <connector>
             <targetReference>Screen_Scenario</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_Address</name>
             <fieldText>&lt;p&gt;&lt;b&gt;Step 2 of 3 — Address &amp; nationality&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Nationality drives &lt;b&gt;pre-score&lt;/b&gt;: UK nationals get Low risk / Simplified CDD; non-UK get Medium risk / Standard CDD.&lt;/p&gt;</fieldText>
@@ -230,7 +228,6 @@
         <connector>
             <targetReference>Action_Create_Application</targetReference>
         </connector>
-        <nextOrFinishButtonLabel>Submit application</nextOrFinishButtonLabel>
         <fields>
             <name>Intro_Scenario</name>
             <fieldText>&lt;p&gt;&lt;b&gt;Step 3 of 3 — Demo scenario&lt;/b&gt;&lt;/p&gt;&lt;p&gt;In production, integrations return real results. For Wave 1 demos, pick a scenario to drive mock IDV, bureau, screening, and KYC outcomes. See the guide panel above for full descriptions.&lt;/p&gt;</fieldText>
